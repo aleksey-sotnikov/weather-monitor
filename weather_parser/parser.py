@@ -62,10 +62,14 @@ def fetch_weather_data():
             table_name = parts[0].strip() if len(parts) > 1 else full_caption
             row_key = parts[1].strip() if len(parts) > 1 else datetime.now().isoformat()
 
+            if table_name in "The LATEST MEASURED DATA":
+                table_name = "pro_main"
+            elif table_name in "Second Weather Board":
+                table_name = "pro_second"
+
             data = {
-                "table_name": table_name,
-                "row_key": row_key,
-                "timestamp": datetime.now().isoformat(),
+                "source": table_name,
+                "timestamp": row_key,
                 "temperature": None,
                 "humidity": None,
                 "pressure": None,

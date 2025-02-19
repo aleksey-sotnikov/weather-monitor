@@ -2,6 +2,8 @@
 
 import sqlite3
 from config import DB_FILE
+import time
+from datetime import datetime
 
 def get_db_connection():
     """Создает и возвращает соединение с БД"""
@@ -15,16 +17,15 @@ def create_tables():
     cursor = conn.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS weather_data (
-            table_name TEXT,
-            row_key TEXT,
-            timestamp TEXT,
+            source TEXT,
+            timestamp REAL,
             temperature REAL,
             humidity REAL,
             pressure REAL,
             illuminance REAL,
             uv_index REAL,
             ir_value REAL,
-            PRIMARY KEY (table_name, row_key)
+            PRIMARY KEY (source, timestamp)
         )
     """)
     conn.commit()
@@ -35,16 +36,22 @@ def save_to_db(data):
     if not data:
         print("Нет данных для сохранения")
         return
+    
+    # Конвертируем ts в timestamp
+    ts = data["timestamp"]
+    timestamp = convert_to_timestamp(ts)
+    if timestamp is None:
+        print(f"Ошибка конвертации ts: {ts}")
+        return
 
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT OR IGNORE INTO weather_data (table_name, row_key, timestamp, temperature, humidity, pressure, illuminance, uv_index, ir_value)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT OR IGNORE INTO weather_data (source, timestamp, temperature, humidity, pressure, illuminance, uv_index, ir_value)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """, (
-        data["table_name"],
-        data["row_key"],
-        data["timestamp"],
+        data["source"],
+        timestamp,
         data.get("temperature"),
         data.get("humidity"),
         data.get("pressure"),
@@ -54,4 +61,12 @@ def save_to_db(data):
     ))
     conn.commit()
     conn.close()
-    print(f"Данные сохранены в БД: {data['table_name']} | {data['row_key']}")
+    print(f"Данные сохранены в БД: {data['source']} | {data['timestamp']}")
+
+def convert_to_timestamp(date_str):
+    """Преобразует строку формата 'DD-MMM-YYYY HH:MM' в timestamp (секунды)."""
+    try:
+        return int(time.mktime(datetime.strptime(date_str, "%d-%b-%Y %H:%M").timetuple()))
+    except ValueError:
+        return None  # Если формат неправильный
+
