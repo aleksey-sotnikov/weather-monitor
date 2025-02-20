@@ -25,7 +25,7 @@ const WeatherChart: React.FC = () => {
     };
 
     return (
-        <div className="p-10">
+        <div style={{ padding: "10px" }}>
             <h2>График погоды</h2>
             <div>
                 {["temperature",  "pressure", "humidity", "illuminance", "uv_index", "ir_index"].map((metric) => (

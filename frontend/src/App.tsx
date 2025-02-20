@@ -17,11 +17,11 @@ const App: FC = () => {
     }, [darkMode]);
 
     return (
-        <div className="App">
+        <div className="App" style={{ padding: "10px" }}>
             <h1>Мониторинг погоды</h1>
             <WeatherChart />
             <a onClick={() => setDarkMode(!darkMode)}>
-                {darkMode ? "🌞 Светлая тема" : "🌙 Тёмная тема"}
+                {darkMode ? "🌙" : "🌞"}
             </a>
         </div>
     );
