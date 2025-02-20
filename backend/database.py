@@ -8,7 +8,7 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row  # Доступ к данным через dict-like объект
     return conn
 
-def fetch_weather_data(table_name=None, start_date=None, end_date=None):
+def fetch_weather_data(src=None, start_date=None, end_date=None):
     """Получает данные о погоде из БД с учётом фильтров."""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -16,9 +16,9 @@ def fetch_weather_data(table_name=None, start_date=None, end_date=None):
     query = "SELECT * FROM weather_data WHERE 1=1"
     params = []
     
-    if table_name:
+    if src:
         query += " AND source = ?"
-        params.append(table_name)
+        params.append(src)
     
     if start_date:
         query += " AND timestamp >= ?"
@@ -36,7 +36,7 @@ def fetch_weather_data(table_name=None, start_date=None, end_date=None):
     conn.close()
     return [dict(row) for row in data]
 
-def count_weather_data(table_name=None, start_date=None, end_date=None):
+def count_weather_data(src=None, start_date=None, end_date=None):
     """Возвращает количество записей в таблице weather_data с учётом фильтров."""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -44,9 +44,9 @@ def count_weather_data(table_name=None, start_date=None, end_date=None):
     query = "SELECT COUNT(*) FROM weather_data WHERE 1=1"
     params = []
 
-    if table_name:
+    if src:
         query += " AND source = ?"
-        params.append(table_name)
+        params.append(src)
 
     if start_date:
         query += " AND timestamp >= ?"
