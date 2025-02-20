@@ -5,7 +5,7 @@ import { fetchWeatherData } from "../services/weatherService";
 
 const WeatherChart: React.FC = () => {
     const [data, setData] = useState<WeatherData[]>([]);
-    const [selectedMetrics, setSelectedMetrics] = useState<string[]>(["temperature", "pressure"]);
+    const [selectedMetrics, setSelectedMetrics] = useState<string[]>(["temperature"]);
     const [startDate, setStartDate] = useState<string | undefined>();
     const [endDate, setEndDate] = useState<string | undefined>();
 
