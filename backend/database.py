@@ -16,9 +16,12 @@ def fetch_weather_data(src=None, start_date=None, end_date=None):
     query = "SELECT * FROM weather_data WHERE 1=1"
     params = []
     
-    if src:
-        query += " AND source = ?"
-        params.append(src)
+    if src and len(src) > 0:
+        query += " AND source in ("
+        for i in range(len(src)):
+            query += "?,"
+            params.append(src[i])
+        query = query[:-1] + ")"
     
     if start_date:
         query += " AND timestamp >= ?"

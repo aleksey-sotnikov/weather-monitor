@@ -20,7 +20,7 @@ const App: FC = () => {
         <div className="App" style={{ padding: "10px" }}>
             <h1>Мониторинг погоды</h1>
             <WeatherChart />
-            <a onClick={() => setDarkMode(!darkMode)}>
+            <a onClick={() => setDarkMode(!darkMode)} href="#" role="button">
                 {darkMode ? "🌙" : "🌞"}
             </a>
         </div>

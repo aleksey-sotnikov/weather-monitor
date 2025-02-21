@@ -1,11 +1,11 @@
 :root {
   color-scheme: light dark;
-  --bg-color: #ffffff;
+  --bg-color: #fefefe;
   --text-color: #000000;
 }
 
 .dark-theme {
-  --bg-color: #121212;
+  --bg-color: #18181c;
   --text-color: #ffffff;
 }
 
@@ -23,6 +23,10 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+a {
+  text-decoration: none;
 }
 
 /* Светлая тема (по умолчанию) */
