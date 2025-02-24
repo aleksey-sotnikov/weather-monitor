@@ -1,4 +1,5 @@
 import { FC, useState, useEffect } from "react";
+import LastData from "./components/LastData";
 import WeatherChart from "./components/WeatherChart";
 
 const App: FC = () => {
@@ -18,11 +19,14 @@ const App: FC = () => {
 
     return (
         <div className="App" style={{ padding: "10px" }}>
+            <header style={{ width: '100%', display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
             <h1>Мониторинг погоды</h1>
-            <WeatherChart />
-            <a onClick={() => setDarkMode(!darkMode)} href="#" role="button">
+            <a onClick={() => setDarkMode(!darkMode)} href="#" role="button" style={{padding: "10px"}}>
                 {darkMode ? "🌙" : "🌞"}
             </a>
+            </header>
+            <LastData />
+            <WeatherChart />
         </div>
     );
 };

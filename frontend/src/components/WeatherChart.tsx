@@ -13,8 +13,9 @@ const metrics: Record<string, string> = {
 };
 
 const sources: Record<string, string> = {
-    pro_main: "Основной",
-    pro_second: "Вторая погодная станция"
+    pro_main: "Основная станция",
+    pro_second: "Вторая погодная станция",
+    pro_old: "Старая погодная станция"
 };
 
 const getLocalDateTime = (date: Date) => {
@@ -25,12 +26,13 @@ const getLocalDateTime = (date: Date) => {
 
 const WeatherChart: React.FC = () => {
     const [data, setData] = useState<WeatherData[]>([]);
+    const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768);
+
     const [selectedMetrics, setSelectedMetrics] = useState<string[]>(["temperature", "pressure"]);
     const [selectedSorces, setSelectedSources] = useState<string[]>(["pro_main"]);
 
-    const [startDate, setStartDate] = useState<string>(getLocalDateTime(new Date(Date.now() - 24 * 60 * 60 * 1000)));
+    const [startDate, setStartDate] = useState<string>(getLocalDateTime(new Date(Date.now() - (isMobile ? 12:24) * 60 * 60 * 1000)));
     const [endDate, setEndDate] = useState<string>(getLocalDateTime(new Date()));
-
 
     useEffect(() => {
         const loadData = async () => {
@@ -39,7 +41,6 @@ const WeatherChart: React.FC = () => {
         };
         loadData();
     }, [startDate, endDate, selectedSorces]);
-
 
     const toggleMetric = (metric: string) => {
         setSelectedMetrics((prev) =>
@@ -54,53 +55,9 @@ const WeatherChart: React.FC = () => {
     };
 
     return (
-        <div style={{ display: "flex", padding: "10px" }}>
-            {/* Блок с фильтрами */}
-            <div style={{ marginRight: "20px", display: "flex", flexDirection: "column" }}>
-                <h3>Выберите показатели:</h3>
-                {Object.keys(metrics).map((metric) => (
-                    <label key={metric} style={{ marginBottom: "5px" }}>
-                        <input
-                            type="checkbox"
-                            checked={selectedMetrics.includes(metric)}
-                            onChange={() => toggleMetric(metric)}
-                        />
-                        {metrics[metric]}
-                    </label>
-                ))}
-
-                <h3>Выберите источник:</h3>
-                {Object.keys(sources).map((source) => (
-                    <label key={source} style={{ marginBottom: "5px" }}>
-                        <input
-                            type="checkbox"
-                            checked={selectedSorces.includes(source)}
-                            onChange={() => toggleSource(source)}
-                        />
-                        {sources[source]}
-                    </label>
-                ))}
-                {/* Блок фильтров периода */}
-                <div style={{ marginTop: "20px", display: "flex", flexDirection: "column" }}>
-                    <label>Начало периода:</label>
-                    <input
-                        type="datetime-local"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                    />
-
-                    <label>Конец периода:</label>
-                    <input
-                        type="datetime-local"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                    />
-                </div>
-            </div>
-
-
+        <div className="flex-container" style={{ padding: "10px" }}>
             {/* Блок с графиком */}
-            <ResponsiveContainer width="80%" height={400}>
+            <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
@@ -161,6 +118,49 @@ const WeatherChart: React.FC = () => {
                     )}
                 </LineChart>
             </ResponsiveContainer>
+
+            {/* Блок с фильтрами */}
+            <div style={{ marginRight: "20px", display: "flex", flexDirection: "column" }}>
+                <h3>Выберите показатели:</h3>
+                {Object.keys(metrics).map((metric) => (
+                    <label key={metric} style={{ marginBottom: "5px" }}>
+                        <input
+                            type="checkbox"
+                            checked={selectedMetrics.includes(metric)}
+                            onChange={() => toggleMetric(metric)}
+                        />
+                        {metrics[metric]}
+                    </label>
+                ))}
+
+                <h3>Выберите источник:</h3>
+                {Object.keys(sources).map((source) => (
+                    <label key={source} style={{ marginBottom: "5px" }}>
+                        <input
+                            type="checkbox"
+                            checked={selectedSorces.includes(source)}
+                            onChange={() => toggleSource(source)}
+                        />
+                        {sources[source]}
+                    </label>
+                ))}
+                {/* Блок фильтров периода */}
+                <div style={{ marginTop: "20px", display: "flex", flexDirection: "column" }}>
+                    <label>Начало периода:</label>
+                    <input
+                        type="datetime-local"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                    />
+
+                    <label>Конец периода:</label>
+                    <input
+                        type="datetime-local"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                    />
+                </div>
+            </div>
         </div>
     );
 };
