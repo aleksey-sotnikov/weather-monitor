@@ -6,48 +6,15 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from config import URL
 
-def fetch_weather_data_old():
-    """Загружает и парсит данные с веб-страницы"""
-    response = requests.get(URL)
-    response.encoding = 'utf-8'
-    if response.status_code != 200:
-        print("Ошибка загрузки страницы")
-        return None
-    
-    soup = BeautifulSoup(response.text, "html.parser")
-    
-    data = []
-    
-    for table in soup.find_all("table"):
-        caption = table.find("caption")
-        if caption:
-            full_caption = caption.text.strip()
-            
-            # Разделяем caption
-            match = re.match(r"(.+?):\s*(.+)", full_caption)
-            if match:
-                table_name = match.group(1).strip()
-                row_key = match.group(2).strip()
-            else:
-                table_name = full_caption
-                row_key = datetime.now().isoformat()
-
-            for row in table.find_all("tr"):
-                columns = row.find_all("td")
-                if len(columns) == 2:
-                    key = columns[0].text.strip()
-                    value = extract_number(columns[1].text.strip())
-                    if value is not None:
-                        data.append((table_name, row_key, key, value, datetime.now().isoformat()))
-    
-    return data
-
 def fetch_weather_data():
     """Загружает и парсит данные с веб-страницы"""
-    response = requests.get(URL)
+    headers = {
+        'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36'
+    }
+    response = requests.get(URL, headers=headers)
     response.encoding = 'utf-8'
     if response.status_code != 200:
-        print("Ошибка загрузки страницы")
+        print("Ошибка загрузки страницы", response)
         return None
     
     soup = BeautifulSoup(response.text, "html.parser")
@@ -66,6 +33,8 @@ def fetch_weather_data():
                 table_name = "pro_main"
             elif table_name in "Second Weather Board":
                 table_name = "pro_second"
+            elif table_name in "Old Weather Board":
+                table_name = "pro_old"
 
             data = {
                 "source": table_name,
