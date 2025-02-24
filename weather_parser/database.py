@@ -4,6 +4,9 @@ import sqlite3
 from config import DB_FILE
 import time
 from datetime import datetime
+from zoneinfo import ZoneInfo
+
+timezone = ZoneInfo("Europe/Moscow")
 
 def get_db_connection():
     """Создает и возвращает соединение с БД"""
@@ -66,7 +69,6 @@ def save_to_db(data):
 def convert_to_timestamp(date_str):
     """Преобразует строку формата 'DD-MMM-YYYY HH:MM' в timestamp (секунды)."""
     try:
-        return int(time.mktime(datetime.strptime(date_str, "%d-%b-%Y %H:%M").timetuple()))
+        return int(datetime.strptime('date_str', "%d-%b-%Y %H:%M").replace(tzinfo=timezone).timestamp())
     except ValueError:
         return None  # Если формат неправильный
-
