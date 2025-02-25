@@ -11,6 +11,18 @@ const metricLabels: Record<string, any> = {
 //    ir_index: "ИК индекс",
 };
 
+const tickFormatter = (tick: number) => {
+    const date = new Date(tick * 1000);
+    return date.toLocaleString("ru-RU", {
+        day: "2-digit",
+        month: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+
+    }).replace(",", "");
+}
+
+
 const LatestWeatherData: React.FC = () => {
     const [latestData, setLatestData] = useState<WeatherData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -39,6 +51,7 @@ const LatestWeatherData: React.FC = () => {
                 <p>Загрузка...</p>
             ) : latestData ? (
                 <div style={{ display: 'flex'}}>
+                    <strong style={{paddingRight: "5px", textDecoration: "underline"}}>{tickFormatter(latestData.timestamp)}</strong> 
                     {Object.keys(metricLabels).map((key) => (
                         latestData[key as keyof WeatherData] !== undefined && (
                             <span key={key} style={{paddingRight: "5px"}}>
