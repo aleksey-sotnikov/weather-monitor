@@ -1,12 +1,18 @@
 :root {
   color-scheme: light dark;
-  --bg-color: #fefefe;
-  --text-color: #000000;
+  --bg-color: #f4f4f4;
+  --text-color: #333;
+  --chart-bg: #fff;
+  --border-color: #ddd;
+  --checkbox-bg: #007bff;
 }
 
 .dark-theme {
-  --bg-color: #222027;
+  --bg-color: #1e1e1e;
   --text-color: #ffffff;
+  --chart-bg: #2a2a2a;
+  --border-color: #444;
+  --checkbox-bg: #ff9800;
 }
 
 body {
@@ -29,16 +35,13 @@ a {
   text-decoration: none;
 }
 
-.flex-container {
-  display: flex;
-  flex-direction: row;
-}
-
-/* Responsive layout - makes a one column layout instead of a two-column layout */
-@media (max-width: 800px) {
-  .flex-container {
-    flex-direction: column;
-  }
+/* Основные стили контейнера */
+.dashboard-container {
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border-radius: 10px;
 }
 
 /* Светлая тема (по умолчанию) */

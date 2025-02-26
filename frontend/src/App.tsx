@@ -1,6 +1,7 @@
 import { FC, useState, useEffect } from "react";
 import LastData from "./components/LastData";
 import WeatherChart from "./components/WeatherChart";
+import ThemeSwitcher from "./components/ThemeSwitcher";
 
 const App: FC = () => {
     const [darkMode, setDarkMode] = useState(() => {
@@ -18,12 +19,14 @@ const App: FC = () => {
     }, [darkMode]);
 
     return (
-        <div className="App" style={{ padding: "10px" }}>
+        <div className="App dashboard-container">
             <header style={{ width: '100%', display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
-            <h2 style={{padding: "0 10px", margin: "10px 0"}}>Мониторинг погоды</h2>
-            <a onClick={() => setDarkMode(!darkMode)} href="#" role="button" style={{padding: "10px"}}>
-                {darkMode ? "🌙" : "🌞"}
-            </a>
+                <h2 style={{padding: "0", margin: "12px 0"}}>Мониторинг погоды</h2>
+                {/* <a onClick={() => setDarkMode(!darkMode)} href="#" role="button" style={{padding: "10px"}}>
+                    {darkMode ? "🌙" : "🌞"}
+                </a> */}
+                
+                <ThemeSwitcher isDarkMode={darkMode} toggleTheme={() => setDarkMode(!darkMode)} />
             </header>
             <LastData />
             <WeatherChart />

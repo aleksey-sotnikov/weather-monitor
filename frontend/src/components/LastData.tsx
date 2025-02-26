@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { WeatherData } from "../types";
 import { fetchWeatherData } from "../services/weatherService";
+import "../styles/LastData.css"
 
 const metricLabels: Record<string, any> = {
     temperature: {l:"t",m:"°С"},
@@ -18,7 +19,7 @@ const tickFormatter = (tick: number) => {
         month: "2-digit",
         hour: "2-digit",
         minute: "2-digit",
-
+        year: "2-digit",
     }).replace(",", "");
 }
 
@@ -46,24 +47,25 @@ const LatestWeatherData: React.FC = () => {
     }, []);
 
     return (
-        <div style={{ padding: "10px" }}>
-            {loading && !latestData ? (
-                <p>Загрузка...</p>
-            ) : latestData ? (
-                <div style={{ display: 'flex'}}>
-                    <strong style={{paddingRight: "5px", textDecoration: "underline"}}>{tickFormatter(latestData.timestamp)}</strong> 
-                    {Object.keys(metricLabels).map((key) => (
-                        latestData[key as keyof WeatherData] !== undefined && (
-                            <span key={key} style={{paddingRight: "5px"}}>
-                               {metricLabels[key].l}: <strong>{latestData[key as keyof WeatherData]}</strong>{metricLabels[key].m};
-                            </span>
-                        )
-                    ))}
-                </div>
-            ) : (
-                <p>Нет данных</p>
-            )}
-        </div>
+        <>
+                {latestData ? (
+                    <>
+                    <p className="last-time">{tickFormatter(latestData.timestamp)}</p>
+                    <div className="latest-data">
+                        <div className="widget">
+                            <h3>Температура</h3>
+                            <p>{latestData.temperature}°C</p>
+                        </div>
+                        <div className="widget">
+                            <h3>Давление</h3>
+                            <p>{latestData.pressure} мм рт. ст.</p>
+                        </div>
+                    </div>
+                    </>
+                ) : (
+                    <p>Данные загружаются...</p>
+                )}
+         </>   
     );
 };
 

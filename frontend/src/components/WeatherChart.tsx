@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
 import { WeatherData } from "../types";
 import { fetchWeatherData } from "../services/weatherService";
+import "../styles/WeatherChart.css";
 
 const metrics: Record<string, string> = {
     temperature: "Температура",
@@ -115,65 +116,66 @@ const WeatherChart: React.FC = () => {
     };
 
     return (
-        <div className="flex-container" style={{ padding: "10px 0px 10px -10px" }}>
+        <div className="dashboard-content">
             {/* Блок с графиком */}
-            <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#555"/>
-                    <XAxis
-                        dataKey="timestamp"
-                        padding={{ right: 10 }} 
-                        tickFormatter={tickFormatter}
-                    />
+            <div className="chart-container">
+                <ResponsiveContainer width="100%" height={isMobile ? 300 : 400}>
+                    <LineChart data={data}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#555"/>
+                        <XAxis
+                            dataKey="timestamp"
+                            padding={{ right: 10 }} 
+                            tickFormatter={tickFormatter}
+                        />
 
-                    <Tooltip
-                        wrapperStyle={{ backgroundColor: "#333", color: "#333", border: "1px solid #666", borderRadius: "5px", padding: "5px" }}
-                        labelFormatter={tickFormatter}
-                    />
+                        <Tooltip
+                            contentStyle={{ backgroundColor: "var(--chart-bg)", color: "var(--chart-text)" }} 
+                            labelFormatter={tickFormatter}
+                        />
 
-                    <Legend />
+                        <Legend />
 
-                    {/* Графики */}
-                    
-                    {selectedMetrics.includes("humidity") && (
-                        <Line type="monotone" yAxisId="humidity" dataKey="humidity" stroke="#52be80" name="Влажность" dot={false} />
-                    )}
-                    {selectedMetrics.includes("illuminance") && (
-                        <Line type="monotone" yAxisId="illuminance" dataKey="illuminance" stroke="#f3b700" name="Освещенность" dot={false} />
-                    )}
-                    {selectedMetrics.includes("uv_index") && (
-                        <Line type="monotone" yAxisId="uv_index" dataKey="uv_index" stroke="#876FD4" name="УФ индекс" dot={false} />
-                    )}
-                    {selectedMetrics.includes("ir_value") && (
-                        <Line type="monotone" yAxisId="ir_value" dataKey="ir_value" stroke="#F5921B" name="ИК индекс" dot={false} />
-                    )}
-                    {selectedMetrics.includes("pressure") && (
-                        <Line type="monotone" yAxisId="pressure" dataKey="pressure" stroke="#2471a3" name="Давление" dot={false} strokeWidth={4}/>
-                    )}
-                    {selectedMetrics.includes("temperature") && (
-                        <Line type="monotone" yAxisId="temperature" dataKey="temperature" stroke="#e74c3c" name="Температура" dot={false} strokeWidth={5} />
-                    )}
+                        {/* Графики */}
+                        
+                        {selectedMetrics.includes("humidity") && (
+                            <Line type="monotone" yAxisId="humidity" dataKey="humidity" stroke="#52be80" name="Влажность" dot={false} />
+                        )}
+                        {selectedMetrics.includes("illuminance") && (
+                            <Line type="monotone" yAxisId="illuminance" dataKey="illuminance" stroke="#f3b700" name="Освещенность" dot={false} />
+                        )}
+                        {selectedMetrics.includes("uv_index") && (
+                            <Line type="monotone" yAxisId="uv_index" dataKey="uv_index" stroke="#876FD4" name="УФ индекс" dot={false} />
+                        )}
+                        {selectedMetrics.includes("ir_value") && (
+                            <Line type="monotone" yAxisId="ir_value" dataKey="ir_value" stroke="#F5921B" name="ИК индекс" dot={false} />
+                        )}
+                        {selectedMetrics.includes("pressure") && (
+                            <Line type="monotone" yAxisId="pressure" dataKey="pressure" stroke="#2471a3" name="Давление" dot={false} strokeWidth={3}/>
+                        )}
+                        {selectedMetrics.includes("temperature") && (
+                            <Line type="monotone" yAxisId="temperature" dataKey="temperature" stroke="#e74c3c" name="Температура" dot={false} strokeWidth={4} />
+                        )}
 
-                    {/* Определение осей */}
-                    {selectedMetrics.includes("humidity") && (<YAxis yAxisId="humidity" stroke="#52be80" orientation="right" domain={["auto", "auto"]} />)}
-                    {selectedMetrics.includes("illuminance") && (<YAxis yAxisId="illuminance" stroke="#f3b700" domain={["auto", "auto"]} />)}
-                    {selectedMetrics.includes("uv_index") && (<YAxis yAxisId="uv_index" stroke="#876FD4" orientation="right" domain={["auto", "auto"]} />)}
-                    {selectedMetrics.includes("ir_value") && (<YAxis yAxisId="ir_value" stroke="#F5921B" orientation="right" domain={["auto", "auto"]} />)}
-                    <YAxis yAxisId="pressure" stroke="#2471a3" orientation="right" domain={["auto", "auto"]} interval={'preserveStart'} strokeWidth={2} />
-                    <YAxis yAxisId="temperature" stroke="#e74c3c" domain={["auto", "auto"]} interval={'preserveStartEnd'} strokeWidth={3}/>
-                    
-                    {selectedMetrics.includes('temperature') && minTemp && (
-                        <ReferenceLine yAxisId="temperature" y={minTemp.temperature} stroke="#e74c3c" 
-                        label={minTemp.temperature + "°С"} strokeWidth={0.4} strokeDasharray="6 3"/>)}
-                    
-                </LineChart>
-            </ResponsiveContainer>
-
+                        {/* Определение осей */}
+                        {selectedMetrics.includes("humidity") && (<YAxis yAxisId="humidity" stroke="#52be80" orientation="right" domain={["auto", "auto"]} />)}
+                        {selectedMetrics.includes("illuminance") && (<YAxis yAxisId="illuminance" stroke="#f3b700" domain={["auto", "auto"]} />)}
+                        {selectedMetrics.includes("uv_index") && (<YAxis yAxisId="uv_index" stroke="#876FD4" orientation="right" domain={["auto", "auto"]} />)}
+                        {selectedMetrics.includes("ir_value") && (<YAxis yAxisId="ir_value" stroke="#F5921B" orientation="right" domain={["auto", "auto"]} />)}
+                        <YAxis yAxisId="pressure" stroke="#2471a3" orientation="right" domain={["auto", "auto"]} interval={'preserveStart'} strokeWidth={2} />
+                        <YAxis yAxisId="temperature" stroke="#e74c3c" domain={["auto", "auto"]} interval={'preserveStartEnd'} strokeWidth={3}/>
+                        
+                        {selectedMetrics.includes('temperature') && minTemp && (
+                            <ReferenceLine yAxisId="temperature" y={minTemp.temperature} stroke="#e74c3c" 
+                            label={minTemp.temperature + "°С"} strokeWidth={0.4} strokeDasharray="6 3"/>)}
+                        
+                    </LineChart>
+                </ResponsiveContainer>
+            </div>
             {/* Блок с фильтрами */}
-            <div style={{ marginRight: "20px", display: "flex", flexDirection: "column" }}>
+            <div className="filters-container">
                 <h3>Выберите показатели:</h3>
                 {Object.keys(metrics).map((metric) => (
-                    <label key={metric} style={{ marginBottom: "5px" }}>
+                    <label key={metric} className="checkbox-label">
                         <input
                             type="checkbox"
                             checked={selectedMetrics.includes(metric)}
@@ -185,7 +187,7 @@ const WeatherChart: React.FC = () => {
 
                 <h3>Выберите источник:</h3>
                 {Object.keys(sources).map((source) => (
-                    <label key={source} style={{ marginBottom: "5px" }}>
+                    <label key={source} className="checkbox-label">
                         <input
                             type="checkbox"
                             checked={selectedSorces.includes(source)}
@@ -196,17 +198,19 @@ const WeatherChart: React.FC = () => {
                 ))}
                 {/* Блок фильтров периода */}
                 <div style={{ marginTop: "20px", display: "flex", flexDirection: "column" }}>
-                    <label>Начало периода:</label>
+                    <h3>Начало периода:</h3>
                     <input
                         type="datetime-local"
                         value={startDate}
+                        className="date-input"
                         onChange={(e) => setStartDate(e.target.value)}
                     />
 
-                    <label>Конец периода:</label>
+                    <h3>Конец периода:</h3>
                     <input
                         type="datetime-local"
                         value={endDate}
+                        className="date-input"
                         onChange={(e) => setEndDate(e.target.value)}
                     />
                 </div>

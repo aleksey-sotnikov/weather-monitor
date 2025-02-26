@@ -1,0 +1,79 @@
+
+/* Гибкость контента */
+.dashboard-content {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.filters-container {
+    background: var(--chart-bg);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container {
+    flex-grow: 1;
+    background: var(--chart-bg);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Стилизация чекбоксов */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.checkbox-label input[type='checkbox'] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.checkbox-label input[type='checkbox']:checked {
+    background-color: var(--checkbox-bg);
+    border-color: var(--checkbox-bg);
+}
+
+/* Стилизация дат */
+.date-input {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background: var(--bg-color);
+    color: var(--text-color);
+    outline: none;
+}
+
+.date-input:focus {
+    border-color: var(--checkbox-bg);
+}
+
+/* Темная тема тултипа */
+.recharts-tooltip-wrapper {
+    background: var(--chart-bg) !important;
+    color: var(--text-color) !important;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive layout - makes a one column layout instead of a two-column layout */
+@media (max-width: 800px) {
+    .dashboard-content {
+      flex-direction: column;
+    }
+  }
+  
