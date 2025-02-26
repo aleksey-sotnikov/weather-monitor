@@ -9,8 +9,9 @@ def get_weather_data(
     start_date: str = Query(None, description="Начальная дата в формате DD-MMM-YYYY HH:MM"),
     end_date: str = Query(None, description="Конечная дата в формате DD-MMM-YYYY HH:MM"),
     limit: int = Query(None, description="Лимит"),
+    dir: str = Query(None, description="Наравление сортировки"),
 ):
-    data = fetch_weather_data(src, start_date, end_date)
+    data = fetch_weather_data(src, start_date, end_date, limit, dir)
     count = len(data)#count_weather_data(src, start_date, end_date)
     return {"data": data, "count" : count}
 

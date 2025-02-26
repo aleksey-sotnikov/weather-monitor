@@ -8,7 +8,7 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row  # Доступ к данным через dict-like объект
     return conn
 
-def fetch_weather_data(src=None, start_date=None, end_date=None, limit=None):
+def fetch_weather_data(src=None, start_date=None, end_date=None, limit=None, dir='ASC'):
     """Получает данные о погоде из БД с учётом фильтров."""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -31,12 +31,17 @@ def fetch_weather_data(src=None, start_date=None, end_date=None, limit=None):
         query += " AND timestamp <= ?"
         params.append(end_date)
     
-    query += " ORDER BY timestamp ASC"
+    query += " ORDER BY timestamp"
     
+    if dir == 'DESC':
+        query += " DESC"
+    else:
+        query += " ASC"
+
     if limit and limit > 0:
         query += " LIMIT ?"
         params.append(limit)
-
+    
     cursor.execute(query, params)
     data = cursor.fetchall()
     

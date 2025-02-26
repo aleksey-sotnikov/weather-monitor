@@ -31,6 +31,10 @@ def create_tables():
             PRIMARY KEY (source, timestamp)
         )
     """)
+    
+     # Создание индекса на поле timestamp
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_timestamp ON weather_data(timestamp)")
+
     conn.commit()
     conn.close()
 
