@@ -8,6 +8,7 @@ def get_weather_data(
     src: list[str] = Query(None, description="Название таблицы (группы сенсоров), необязательно"),
     start_date: str = Query(None, description="Начальная дата в формате DD-MMM-YYYY HH:MM"),
     end_date: str = Query(None, description="Конечная дата в формате DD-MMM-YYYY HH:MM"),
+    limit: int = Query(None, description="Лимит"),
 ):
     data = fetch_weather_data(src, start_date, end_date)
     count = len(data)#count_weather_data(src, start_date, end_date)
