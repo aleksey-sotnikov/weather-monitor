@@ -32,7 +32,7 @@ const LatestWeatherData: React.FC = () => {
         const loadData = async () => {
             setLoading(true);
             try {
-                const data = await fetchWeatherData(['pro_main'], null, null, 1);
+                const data = await fetchWeatherData(['pro_main'], null, null, 1, 'DESC');
                 setLatestData(data[data.length - 1]);
             } catch (error) {
                 console.error("Ошибка загрузки данных:", error);
@@ -56,10 +56,11 @@ const LatestWeatherData: React.FC = () => {
                             <h3>Температура</h3>
                             <p>{latestData.temperature}°C</p>
                         </div>
-                        <div className="widget">
+                        {latestData.pressure && (<div className="widget">
                             <h3>Давление</h3>
-                            <p>{latestData.pressure} мм рт. ст.</p>
-                        </div>
+                            <p>{Math.round(latestData.pressure)}</p>
+                            <h3>мм рт. ст.</h3>
+                        </div>)}
                     </div>
                     </>
                 ) : (

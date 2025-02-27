@@ -2,7 +2,7 @@ import { WeatherData } from "../types";
 
 const BASE_API_URL = process.env.REACT_APP_API_URL;
 
-export const fetchWeatherData = async (sources?: string[], startDate?: string | null, endDate?: string | null, limit?: number): Promise<WeatherData[]> => {
+export const fetchWeatherData = async (sources?: string[], startDate?: string | null, endDate?: string | null, limit?: number, dir?: string): Promise<WeatherData[]> => {
    
     let url = `${BASE_API_URL}/weather`;
 
@@ -11,6 +11,7 @@ export const fetchWeatherData = async (sources?: string[], startDate?: string | 
     if (startDate) params.append("start_date", Math.floor(new Date(startDate).getTime() / 1000).toString());
     if (endDate) params.append("end_date", Math.floor(new Date(endDate).getTime() / 1000).toString());
     if (limit) params.append("limit", `${limit}`);
+    if (dir) params.append("dir", `${dir}`);
 
     if (params.toString()) url += `?${params.toString()}`;
 
