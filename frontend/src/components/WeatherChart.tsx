@@ -119,7 +119,7 @@ const WeatherChart: React.FC = () => {
         <div className="dashboard-content">
             {/* Блок с графиком */}
             <div className="chart-container">
-                <ResponsiveContainer width="100%" height={isMobile ? 300 : 400}>
+                <ResponsiveContainer width="100%" height={isMobile ? 260 : 400}>
                     <LineChart data={data}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#555"/>
                         <XAxis

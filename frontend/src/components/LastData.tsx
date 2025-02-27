@@ -3,9 +3,9 @@ import { WeatherData } from "../types";
 import { fetchWeatherData } from "../services/weatherService";
 import "../styles/LastData.css"
 
-const metricLabels: Record<string, any> = {
-    temperature: {l:"t",m:"°С"},
-    pressure: {l:"ps", m:"мм"},
+const metrics: Record<string, any> = {
+    temperature: {label:"t",unit:"°C"},
+    pressure: {label:"ps", unit:"мм рт. ст."},
 //    illuminance: "Освещенность",
 //    humidity: "Влажность",
 //    uv_index: "УФ индекс",
@@ -54,12 +54,16 @@ const LatestWeatherData: React.FC = () => {
                     <div className="latest-data">
                         <div className="widget">
                             <h3>Температура</h3>
-                            <p>{latestData.temperature}°C</p>
+                            <p>{latestData.temperature}<span>°C</span></p>
+                            
                         </div>
                         {latestData.pressure && (<div className="widget">
                             <h3>Давление</h3>
-                            <p>{Math.round(latestData.pressure)}</p>
-                            <h3>мм рт. ст.</h3>
+                            <p className="pressure">
+                                {Math.round(latestData.pressure)}
+                                <span>мм рт. ст.</span>
+                            </p>
+                            
                         </div>)}
                     </div>
                     </>

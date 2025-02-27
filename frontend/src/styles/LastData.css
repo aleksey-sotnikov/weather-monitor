@@ -9,7 +9,7 @@
     padding: 10px 20px;
     border-radius: 12px;
     text-align: center;
-    min-width: 120px;
+    min-width: 100px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
@@ -21,9 +21,24 @@
 
 .widget p {
     margin: 5px 0 0;
-    font-size: 22px;
+    font-size: 26px;
     font-weight: bold;
     color: #fff;
+}
+
+.widget span {
+    margin: 0 2px;
+    font-size: 20px;
+    color: #bbb;
+}
+
+.widget p.pressure {
+    display: block;
+    font-size: 22px;
+}
+
+.widget span.pressure {
+    font-size: 18px;
 }
 
 .last-time {
@@ -31,4 +46,16 @@
     margin: 5px;
     font-family: monospace;
     font-size: 12px;
+}
+
+@media (max-width: 800px) {
+    .widget {
+        width: 100%;
+        padding: 5px 20px;
+    }
+
+    .widget .pressure span {
+        display: block;
+        font-size: 14px;
+    }
 }
