@@ -47,6 +47,7 @@ def create_tables():
     
      # Создание индекса на поле timestamp
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_timestamp ON weather_data(timestamp)")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_timestamp_pk ON weather_data(source, timestamp)")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_timestamp_fc ON weather_forecast(source, timestamp)")
 
     conn.commit()
@@ -106,7 +107,7 @@ def save_forecast(data):
             row.get("wind_dir"),
             row.get("wind_gust")
         ))
-
-    conn.commit()
+        conn.commit()
+        
     conn.close()
     print(f"Данные прогноза сохранены в БД")

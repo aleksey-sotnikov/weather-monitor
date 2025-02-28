@@ -64,7 +64,7 @@ def fetch_forecast():
                 "wind_gust": data["wind"].get("gust"), # Может отсутствовать
             })
 
-            return dataList
+        return dataList
     else:
         print(f"Ошибка запроса OpenWeatherMap: {response.status_code}")
         return None
