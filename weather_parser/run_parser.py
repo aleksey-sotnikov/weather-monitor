@@ -1,25 +1,29 @@
 # run_parser.py
 
 import time
-from random import random
-from parser import fetch_weather_data
-from database import save_to_db, create_tables
+from database import save_weather, save_forecast, create_tables
+from parser_pro import fetch_weather_data
+from parser_owm import fetch_openweather_data, fetch_forecast
 from config import FETCH_INTERVAL
+
+def parse(parser):
+        try:
+            weather_data_list = parser()
+            if weather_data_list:
+                save_weather(weather_data_list)  # Сохраняем каждую таблицу отдельно
+        except Exception as e:
+            print("round failed:", e)
 
 if __name__ == "__main__":
     create_tables()  # Инициализация БД перед запуском
-    fetchIntervalAmplifier = 1
     while True:
-        try:
-            weather_data_list = fetch_weather_data()
-            if weather_data_list:
-                for data in weather_data_list:
-                    #print(data)
-                    save_to_db(data)  # Сохраняем каждую таблицу отдельно
-                fetchIntervalAmplifier = 1
-        except Exception as e:
-            if fetchIntervalAmplifier < 10:
-                fetchIntervalAmplifier += 0.5 + random()
-            print("round failed ", e, ". fetch interval =",FETCH_INTERVAL,", apm =", fetchIntervalAmplifier)
-        finally:
-            time.sleep(FETCH_INTERVAL * fetchIntervalAmplifier)
+        parse(fetch_weather_data)
+        parse(fetch_openweather_data)
+        # try:
+        weather_data_list = fetch_forecast()
+        if weather_data_list:
+            save_forecast(weather_data_list)  # Сохраняем каждую таблицу отдельно
+        # except Exception as e:
+        #     print("forecast failed:", e)
+
+        time.sleep(FETCH_INTERVAL)

@@ -5,6 +5,11 @@ import re
 from bs4 import BeautifulSoup
 from datetime import datetime
 from config import URL
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+timezone = ZoneInfo("Europe/Moscow")
+
 
 def fetch_weather_data():
     """Загружает и парсит данные с веб-страницы"""
@@ -38,13 +43,16 @@ def fetch_weather_data():
 
             data = {
                 "source": table_name,
-                "timestamp": row_key,
+                "timestamp": convert_to_timestamp(row_key),
                 "temperature": None,
                 "humidity": None,
                 "pressure": None,
                 "illuminance": None,
                 "uv_index": None,
-                "ir_value": None
+                "ir_value": None,
+                "wind_speed": None,
+                "wind_dir": None,
+                "wind_gust": None,
             }
             
             for row in table.find_all("tr"):
@@ -74,3 +82,10 @@ def extract_number(value):
     """Извлекает только число из строки"""
     match = re.search(r"([-+]?\d*\.\d+|\d+)", value)
     return float(match.group()) if match else None
+
+def convert_to_timestamp(date_str):
+    """Преобразует строку формата 'DD-MMM-YYYY HH:MM' в timestamp (секунды)."""
+    try:
+        return int(datetime.strptime(date_str, "%d-%b-%Y %H:%M").replace(tzinfo=timezone).timestamp())
+    except ValueError:
+        return None  # Если формат неправильный
