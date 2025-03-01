@@ -23,6 +23,11 @@ const tickFormatter = (tick: number) => {
     }).replace(",", "");
 }
 
+function getWindDirection(degrees: number): string {
+    const directions = ["С", "СВ", "В", "ЮВ", "Ю", "ЮЗ", "З", "СЗ", "С"];
+    const index = Math.round(degrees / 45);
+    return directions[index];
+}
 
 const LatestWeatherData: React.FC = () => {
     const [latestData, setLatestData] = useState<WeatherData | null>(null);
@@ -32,8 +37,19 @@ const LatestWeatherData: React.FC = () => {
         const loadData = async () => {
             setLoading(true);
             try {
-                const data = await fetchWeatherData(['pro_main'], null, null, 1, 'DESC');
-                setLatestData(data[data.length - 1]);
+                const dataList = await fetchWeatherData(['pro_main'], null, null, 1, 'DESC');
+                const data = dataList[dataList.length - 1];
+                //enrich wind data
+                const dataOWMList = await fetchWeatherData(['owm_real'], null, null, 1, 'DESC');
+                if (dataOWMList.length > 0){
+                    const owmData = dataOWMList[dataOWMList.length - 1];
+                    if (owmData && data.timestamp - owmData.timestamp < 1800) {
+                        data.wind_speed = owmData.wind_speed;
+                        data.wind_dir = owmData.wind_dir;
+                        data.wind_gust = owmData.wind_gust;    
+                    }
+                }
+                setLatestData(data);
             } catch (error) {
                 console.error("Ошибка загрузки данных:", error);
             }
@@ -62,6 +78,14 @@ const LatestWeatherData: React.FC = () => {
                             <p className="pressure">
                                 {Math.round(latestData.pressure)}
                                 <span>мм рт. ст.</span>
+                            </p>
+                            
+                        </div>)}
+                        {latestData.wind_speed && (<div className="widget">
+                            <h3>Ветер {latestData.wind_dir && getWindDirection(latestData.wind_dir)}</h3>
+                            <p className="pressure">
+                                {Math.round(latestData.wind_speed)}
+                                <span>м/с</span>
                             </p>
                             
                         </div>)}

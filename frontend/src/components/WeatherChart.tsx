@@ -16,7 +16,8 @@ const metrics: Record<string, string> = {
 const sources: Record<string, string> = {
     pro_main: "Основная станция",
     pro_second: "Вторая погодная станция",
-    pro_old: "Старая погодная станция"
+    pro_old: "Старая погодная станция",
+    owm_real: "Open weather map"
 };
 
 const getLocalDateTime = (date: Date) => {

@@ -7,4 +7,7 @@ export interface WeatherData {
     pressure?: number;
     uv_index?: number;
     ir_value?: number;
+    wind_speed?: number;
+    wind_dir?: number;
+    wind_gust?: number;
 }
