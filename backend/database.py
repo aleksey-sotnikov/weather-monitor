@@ -9,11 +9,17 @@ def get_db_connection():
     return conn
 
 def fetch_weather_data(src=None, start_date=None, end_date=None, limit=None, dir='ASC'):
+    return fetch_data("weather_data", start_date, end_date, limit, dir)
+
+def fetch_forecast_data(src=None, start_date=None, end_date=None, limit=None, dir='ASC'):
+    return fetch_data("weather_forecast", start_date, end_date, limit, dir)
+
+def fetch_data(table, src=None, start_date=None, end_date=None, limit=None, dir='ASC'):
     """Получает данные о погоде из БД с учётом фильтров."""
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    query = "SELECT * FROM weather_data WHERE 1=1"
+    query = "SELECT * FROM " + table + " WHERE 1=1"
     params = []
     
     if src and len(src) > 0:
@@ -47,29 +53,3 @@ def fetch_weather_data(src=None, start_date=None, end_date=None, limit=None, dir
     
     conn.close()
     return [dict(row) for row in data]
-
-def count_weather_data(src=None, start_date=None, end_date=None):
-    """Возвращает количество записей в таблице weather_data с учётом фильтров."""
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    query = "SELECT COUNT(*) FROM weather_data WHERE 1=1"
-    params = []
-
-    if src:
-        query += " AND source = ?"
-        params.append(src)
-
-    if start_date:
-        query += " AND timestamp >= ?"
-        params.append(start_date)
-
-    if end_date:
-        query += " AND timestamp <= ?"
-        params.append(end_date)
-
-    cursor.execute(query, params)
-    count = cursor.fetchone()[0]  # Получаем количество записей
-
-    conn.close()
-    return count
