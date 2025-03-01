@@ -9,10 +9,10 @@ def get_db_connection():
     return conn
 
 def fetch_weather_data(src=None, start_date=None, end_date=None, limit=None, dir='ASC'):
-    return fetch_data("weather_data", start_date, end_date, limit, dir)
+    return fetch_data("weather_data", src, start_date, end_date, limit, dir)
 
 def fetch_forecast_data(src=None, start_date=None, end_date=None, limit=None, dir='ASC'):
-    return fetch_data("weather_forecast", start_date, end_date, limit, dir)
+    return fetch_data("weather_forecast", src, start_date, end_date, limit, dir)
 
 def fetch_data(table, src=None, start_date=None, end_date=None, limit=None, dir='ASC'):
     """Получает данные о погоде из БД с учётом фильтров."""
