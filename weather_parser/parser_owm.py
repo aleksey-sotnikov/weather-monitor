@@ -57,7 +57,7 @@ def fetch_forecast():
                 "source": 'owm_fc',
                 "timestamp": data["dt"],
                 "temperature": data["main"]["temp"],
-                "pressure": data["main"]["pressure"],
+                "pressure": convert_hpa_to_mmhg(data["main"]["pressure"]),
                 "humidity": data["main"]["humidity"],
                 "wind_speed": data["wind"]["speed"],
                 "wind_dir": data["wind"]["deg"],  # Направление ветра в градусах
@@ -68,3 +68,6 @@ def fetch_forecast():
     else:
         print(f"Ошибка запроса OpenWeatherMap: {response.status_code}")
         return None
+    
+def convert_hpa_to_mmhg(hpa: float) -> float:
+    return round(hpa * 0.75006, 2)
