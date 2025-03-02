@@ -5,22 +5,24 @@ import "../styles/LastData.css"
 
 const metrics: Record<string, any> = {
     temperature: {label:"t",unit:"°C"},
-    pressure: {label:"ps", unit:"мм рт. ст."},
+    pressure: {label:"ps", unit:"мм рт.ст."},
 //    illuminance: "Освещенность",
 //    humidity: "Влажность",
 //    uv_index: "УФ индекс",
 //    ir_index: "ИК индекс",
 };
 
-const tickFormatter = (tick: number) => {
+const dateFormatter = (tick: number) => {
     const date = new Date(tick * 1000);
-    return date.toLocaleString("ru-RU", {
+    const dt = date.toLocaleString("ru-RU", {
         day: "2-digit",
         month: "2-digit",
         hour: "2-digit",
         minute: "2-digit",
-        year: "2-digit",
+       // year: "2-digit",
     }).replace(",", "");
+    const min =  Math.trunc((new Date().getTime()/1000 - tick) / 60);
+    return  min > 10 ? dt : `${min} мин. назад - ${dt}`;
 }
 
 function getWindDirection(degrees: number): string {
@@ -66,7 +68,7 @@ const LatestWeatherData: React.FC = () => {
         <>
                 {latestData ? (
                     <>
-                    <p className="last-time">{tickFormatter(latestData.timestamp)}</p>
+                    <p className="last-time">{dateFormatter(latestData.timestamp)}</p>
                     <div className="latest-data">
                         <div className="widget">
                             <h3>Температура</h3>
@@ -83,11 +85,11 @@ const LatestWeatherData: React.FC = () => {
                         </div>)}
                         {latestData.wind_speed && (<div className="widget">
                             <h3>Ветер {latestData.wind_dir && getWindDirection(latestData.wind_dir)}</h3>
-                            <p className="pressure">
+                            <p>
                                 {Math.round(latestData.wind_speed)}
                                 <span>м/с</span>
                             </p>
-                            
+                            {latestData.wind_gust && (<h3>до {Math.round(latestData.wind_gust)} м/с</h3>)}
                         </div>)}
                     </div>
                     </>

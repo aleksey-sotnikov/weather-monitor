@@ -38,7 +38,7 @@ a {
 /* Основные стили контейнера */
 .dashboard-container {
   font-family: 'Arial', sans-serif;
-  padding: 20px;
+  padding: 10px;
   background-color: var(--bg-color);
   color: var(--text-color);
   border-radius: 10px;

@@ -11,6 +11,7 @@ const metrics: Record<string, string> = {
     humidity: "Влажность",
     uv_index: "УФ индекс",
     ir_value: "ИК индекс",
+    wind_speed: "Ветер",
 };
 
 const sources: Record<string, string> = {
@@ -19,6 +20,15 @@ const sources: Record<string, string> = {
     pro_old: "Старая погодная станция",
     owm_real: "Open weather map"
 };
+
+const timeRanges = [
+    { label: "6 ч", value: 6 },
+    { label: "12 ч", value: 12 },
+    { label: "1 д", value: 24 },
+    { label: "2 д", value: 48 },
+    { label: "3 д", value: 72 },
+    { label: "Неделя", value: 168 },
+];
 
 const getLocalDateTime = (date: Date) => {
     const offset = date.getTimezoneOffset() * 60000; // Смещение в миллисекундах
@@ -67,6 +77,7 @@ const smoothData = (data: WeatherData[], level: number): WeatherData[] => {
             illuminance: avg("illuminance"),
             uv_index: avg("uv_index"),
             ir_value: avg("ir_value"),
+            wind_speed: avg("wind_speed"),
         };
     });
 };
@@ -77,14 +88,15 @@ const WeatherChart: React.FC = () => {
     const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768);
 
     const [selectedMetrics, setSelectedMetrics] = useState<string[]>(["temperature", "pressure"]);
-    const [selectedSorces, setSelectedSources] = useState<string[]>(["pro_main"]);
+    const [selectedSources, setSelectedSources] = useState<string[]>(["pro_main"]);
 
     const [startDate, setStartDate] = useState<string>(getLocalDateTime(new Date(Date.now() - (isMobile ? 12:24) * 60 * 60 * 1000)));
-    const [endDate, setEndDate] = useState<string>();
+    const [endDate, setEndDate] = useState<string>("");
+    const [activeFilter, setActiveFilter] = useState<number | null>(isMobile ? 12 : 24);
 
     useEffect(() => {
         const loadData = async () => {
-            const result = await fetchWeatherData(selectedSorces, startDate, endDate);
+            const result = await fetchWeatherData(selectedSources, startDate, endDate);
             setData(smoothData(result, 4));
 
             if (selectedMetrics.includes("temperature") && result.length) {
@@ -102,7 +114,7 @@ const WeatherChart: React.FC = () => {
         };
         
         loadData();
-    }, [startDate, endDate, selectedSorces]);
+    }, [startDate, endDate, selectedSources]);
 
     const toggleMetric = (metric: string) => {
         setSelectedMetrics((prev) =>
@@ -114,6 +126,14 @@ const WeatherChart: React.FC = () => {
         setSelectedSources((prev) =>
             [source] //prev.includes(source) ? prev.filter((m) => m !== source) : [source] //TMP single src supported [...prev, source]
         );
+    };
+
+    const setQuickFilter = (hours: number) => {
+        const end = new Date();
+        const start = new Date();
+        start.setHours(end.getHours() - hours);
+        setStartDate(start.toISOString().slice(0, 16));
+        setActiveFilter(hours);
     };
 
     return (
@@ -141,6 +161,9 @@ const WeatherChart: React.FC = () => {
                         {selectedMetrics.includes("humidity") && (
                             <Line type="monotone" yAxisId="humidity" dataKey="humidity" stroke="#52be80" name="Влажность" dot={false} />
                         )}
+                        {selectedMetrics.includes("wind_speed") && (
+                            <Line type="monotone" yAxisId="wind_speed" dataKey="wind_speed" stroke="#52be80" name="Ветер" dot={false} />
+                        )}
                         {selectedMetrics.includes("illuminance") && (
                             <Line type="monotone" yAxisId="illuminance" dataKey="illuminance" stroke="#f3b700" name="Освещенность" dot={false} />
                         )}
@@ -159,6 +182,7 @@ const WeatherChart: React.FC = () => {
 
                         {/* Определение осей */}
                         {selectedMetrics.includes("humidity") && (<YAxis yAxisId="humidity" stroke="#52be80" orientation="right" domain={["auto", "auto"]} />)}
+                        {selectedMetrics.includes("wind_speed") && (<YAxis yAxisId="wind_speed" stroke="#52be80" orientation="right" domain={["auto", "auto"]} />)}
                         {selectedMetrics.includes("illuminance") && (<YAxis yAxisId="illuminance" stroke="#f3b700" domain={["auto", "auto"]} />)}
                         {selectedMetrics.includes("uv_index") && (<YAxis yAxisId="uv_index" stroke="#876FD4" orientation="right" domain={["auto", "auto"]} />)}
                         {selectedMetrics.includes("ir_value") && (<YAxis yAxisId="ir_value" stroke="#F5921B" orientation="right" domain={["auto", "auto"]} />)}
@@ -171,6 +195,17 @@ const WeatherChart: React.FC = () => {
                         
                     </LineChart>
                 </ResponsiveContainer>
+                <div className="filter-buttons">
+                    {timeRanges.map(({ label, value }) => (
+                        <button 
+                            key={value} 
+                            className={`filter-button ${activeFilter === value ? "active" : ""}`} 
+                            onClick={() => setQuickFilter(value)}
+                        >
+                            {label}
+                        </button>
+                    ))}
+                </div>
             </div>
             {/* Блок с фильтрами */}
             <div className="filters-container">
@@ -191,7 +226,7 @@ const WeatherChart: React.FC = () => {
                     <label key={source} className="checkbox-label">
                         <input
                             type="checkbox"
-                            checked={selectedSorces.includes(source)}
+                            checked={selectedSources.includes(source)}
                             onChange={() => toggleSource(source)}
                         />
                         {sources[source]}
@@ -202,7 +237,7 @@ const WeatherChart: React.FC = () => {
                     <h3>Начало периода:</h3>
                     <input
                         type="datetime-local"
-                        value={startDate}
+                        value={startDate ?? ""}
                         className="date-input"
                         onChange={(e) => setStartDate(e.target.value)}
                     />
@@ -210,7 +245,7 @@ const WeatherChart: React.FC = () => {
                     <h3>Конец периода:</h3>
                     <input
                         type="datetime-local"
-                        value={endDate}
+                        value={endDate ?? ""}
                         className="date-input"
                         onChange={(e) => setEndDate(e.target.value)}
                     />

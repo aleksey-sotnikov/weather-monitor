@@ -21,10 +21,7 @@ const App: FC = () => {
     return (
         <div className="App dashboard-container">
             <header style={{ width: '100%', display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
-                <h2 style={{padding: "0", margin: "12px 0"}}>Мониторинг погоды</h2>
-                {/* <a onClick={() => setDarkMode(!darkMode)} href="#" role="button" style={{padding: "10px"}}>
-                    {darkMode ? "🌙" : "🌞"}
-                </a> */}
+                <h2 style={{padding: "0", margin: "0px 10px 10px 0"}}>Монитор погоды</h2>
                 
                 <ThemeSwitcher isDarkMode={darkMode} toggleTheme={() => setDarkMode(!darkMode)} />
             </header>

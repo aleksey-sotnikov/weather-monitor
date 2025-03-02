@@ -1,7 +1,7 @@
 .latest-data {
     display: flex;
     gap: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .widget {
@@ -9,18 +9,21 @@
     padding: 10px 20px;
     border-radius: 12px;
     text-align: center;
-    min-width: 60px;
+    min-width: 70px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
 }
 
 .widget h3 {
     margin: 0;
-    font-size: 12px;
+    font-size: 11px;
     color: #bbb;
 }
 
 .widget p {
-    margin: 5px 0 0;
+    margin: 2px 0 0;
     font-size: 26px;
     font-weight: bold;
     color: #fff;
@@ -37,9 +40,9 @@
     font-size: 22px;
 }
 
-.widget span.pressure {
-    font-size: 18px;
-}
+.widget .pressure span {
+    display: block;
+    font-size: 14px;}
 
 .last-time {
     padding: 0;
@@ -52,10 +55,5 @@
     .widget {
         width: 100%;
         padding: 5px 20px;
-    }
-
-    .widget .pressure span {
-        display: block;
-        font-size: 14px;
     }
 }

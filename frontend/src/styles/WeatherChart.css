@@ -70,6 +70,50 @@
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start; /* Ставим кнопки в начало */
+    margin: 10px 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 5px;
+    scroll-padding-left: 10px; /* Смещение первой кнопки вправо */
+    -webkit-overflow-scrolling: touch; /* Улучшение плавности прокрутки на iOS */
+}
+/* Скрытие скроллбара в Webkit-браузерах (Chrome, Safari) */
+.filter-buttons::-webkit-scrollbar {
+    display: none;
+}
+
+/* Дополнительно: Отключаем перенос кнопок */
+.filter-button {
+    flex: 0 0 auto; /* Не сжимается и не растягивается */
+    background: rgba(255, 255, 255, 0.1);
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    min-width: 70px;
+    font-size: 16px;
+    color: var(--text-color);
+    transition: background 0.3s;
+}
+
+.filter-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.filter-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.filter-button.active {
+    background: rgba(255, 255, 255, 0.3);
+    font-weight: bold;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
 /* Responsive layout - makes a one column layout instead of a two-column layout */
 @media (max-width: 800px) {
     .dashboard-content {
