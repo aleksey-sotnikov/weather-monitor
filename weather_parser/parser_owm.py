@@ -24,7 +24,7 @@ def fetch_openweather_data():
             "source": 'owm_real',
             "timestamp": data["dt"],
             "temperature": data["main"]["temp"],
-            "pressure": data["main"]["pressure"],
+            "pressure": convert_hpa_to_mmhg(data["main"]["pressure"]),
             "humidity": data["main"]["humidity"],
             "wind_speed": data["wind"]["speed"],
             "wind_dir": data["wind"]["deg"],  # Направление ветра в градусах
