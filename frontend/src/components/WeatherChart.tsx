@@ -22,12 +22,15 @@ const sources: Record<string, string> = {
 };
 
 const timeRanges = [
+    { label: "3 ч", value: 3 },
     { label: "6 ч", value: 6 },
     { label: "12 ч", value: 12 },
     { label: "1 д", value: 24 },
     { label: "2 д", value: 48 },
     { label: "3 д", value: 72 },
+    { label: "4 д", value: 96 },
     { label: "Неделя", value: 168 },
+    { label: "2 недели", value: 336 },
 ];
 
 const getLocalDateTime = (date: Date) => {
