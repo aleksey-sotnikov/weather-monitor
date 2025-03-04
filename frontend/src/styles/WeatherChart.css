@@ -3,14 +3,14 @@
 .dashboard-content {
     display: flex;
     flex-direction: row;
-    gap: 20px;
+    gap: 10px;
 }
 
 .filters-container {
     background: var(--chart-bg);
     padding: 15px;
     border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 .chart-container {
@@ -18,7 +18,7 @@
     background: var(--chart-bg);
     padding: 15px;
     border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 /* Стилизация чекбоксов */
@@ -89,7 +89,7 @@
 /* Дополнительно: Отключаем перенос кнопок */
 .filter-button {
     flex: 0 0 auto; /* Не сжимается и не растягивается */
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--bg-color);
     padding: 12px 15px;
     border-radius: 10px;
     border: none;
@@ -101,17 +101,17 @@
 }
 
 .filter-button:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--bg-color-3);
 }
 
 .filter-button:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--bg-color-3);
 }
 
 .filter-button.active {
-    background: rgba(255, 255, 255, 0.3);
+    background: var(--bg-color-2);
     font-weight: bold;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--border-color-2);
 }
 
 /* Responsive layout - makes a one column layout instead of a two-column layout */
@@ -121,3 +121,7 @@
     }
   }
   
+
+  @media (prefers-color-scheme: dark) {
+
+  }

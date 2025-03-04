@@ -1,17 +1,23 @@
 :root {
   color-scheme: light dark;
   --bg-color: #f4f4f4;
+  --bg-color-2: #e9e9e9;
+  --bg-color-3: #e4e4e4;
   --text-color: #333;
   --chart-bg: #fff;
   --border-color: #ddd;
+  --border-color-2: #ccc;
   --checkbox-bg: #007bff;
 }
 
 .dark-theme {
   --bg-color: #1e1e1e;
+  --bg-color-2: #2a2a2a;
+  --bg-color-3: #3a3a3a;
   --text-color: #ffffff;
   --chart-bg: #2a2a2a;
   --border-color: #444;
+  --border-color-2: #555;
   --checkbox-bg: #ff9800;
 }
 
@@ -47,17 +53,8 @@ a {
 /* Светлая тема (по умолчанию) */
 input[type="datetime-local"] {
   padding: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
   border-radius: 5px;
-  background-color: #fff;
-  color: #333;
-}
-
-/* Темная тема */
-@media (prefers-color-scheme: dark) {
-  input[type="datetime-local"] {
-    background-color: #333;
-    color: #fff;
-    border: 1px solid #555;
-  }
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }

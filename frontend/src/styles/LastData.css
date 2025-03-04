@@ -5,7 +5,7 @@
 }
 
 .widget {
-    background: linear-gradient(135deg, #2a2a2a, #3a3a3a);
+    background: linear-gradient(135deg, var(--chart-bg), var(--bg-color-2));
     padding: 10px 20px;
     border-radius: 12px;
     text-align: center;
@@ -26,7 +26,7 @@
     margin: 2px 0 0;
     font-size: 26px;
     font-weight: bold;
-    color: #fff;
+    color: var(--text-color);
 }
 
 .widget span {
@@ -55,5 +55,18 @@
     .widget {
         width: 100%;
         padding: 5px 20px;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .widget {
+        background: linear-gradient(135deg, var(--chart-bg), var(--bg-color-3));
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    .widget h3 {
+        color: #777;
+    }
+    .widget span {
+        color: #777;
     }
 }
