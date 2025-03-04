@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { WeatherData } from "../types";
 import { fetchWeatherData } from "../services/weatherService";
 import "../styles/LastData.css"
@@ -21,8 +21,7 @@ const dateFormatter = (tick: number) => {
         minute: "2-digit",
        // year: "2-digit",
     }).replace(",", "");
-    const min =  Math.trunc((new Date().getTime()/1000 - tick) / 60);
-    return  min > 10 ? dt : `${min} мин. назад - ${dt}`;
+    return dt;
 }
 
 function getWindDirection(degrees: number): string {
@@ -34,6 +33,10 @@ function getWindDirection(degrees: number): string {
 const LatestWeatherData: React.FC = () => {
     const [latestData, setLatestData] = useState<WeatherData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+
+    const lastUpdatedMins = useMemo(() => {
+        return latestData? Math.trunc((new Date().getTime()/1000 - latestData?.timestamp) / 60) : null;
+    }, [latestData])
 
     useEffect(() => {
         const loadData = async () => {
@@ -68,7 +71,10 @@ const LatestWeatherData: React.FC = () => {
         <>
                 {latestData ? (
                     <>
-                    <p className="last-time">{dateFormatter(latestData.timestamp)}</p>
+                    {lastUpdatedMins && (<p className="last-time">
+                        {lastUpdatedMins > 10 ? '' : lastUpdatedMins < 2 ? 'cейчас' : `${lastUpdatedMins} мин. назад`}
+                        <span>{dateFormatter(latestData.timestamp)}</span>
+                        </p>)}
                     <div className="latest-data">
                         <div className="widget">
                             <h3>Температура</h3>

@@ -4,6 +4,11 @@
     margin-bottom: 10px;
 }
 
+.last-time span {
+    padding-left: 12px;
+    color: #777;
+}
+
 .widget {
     background: linear-gradient(135deg, var(--chart-bg), var(--bg-color-2));
     padding: 10px 20px;
