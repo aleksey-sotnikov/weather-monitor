@@ -32,7 +32,7 @@ async def health_check():
     try:
         # Проверяем статус сервиса парсера
         result = subprocess.run(
-            ["systemctl", "is-active", "weather-parser.service"],
+            ["systemctl", "is-active", "weather_parser.service"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True
