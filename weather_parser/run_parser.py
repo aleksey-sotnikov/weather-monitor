@@ -12,18 +12,26 @@ def parse(parser):
             if weather_data_list:
                 save_weather(weather_data_list)  # Сохраняем каждую таблицу отдельно
         except Exception as e:
+            import traceback
             print("round failed:", e)
+            print(traceback.format_exc())
 
 if __name__ == "__main__":
-    create_tables()  # Инициализация БД перед запуском
+    # Инициализация БД перед запуском
+    create_tables() 
     while True:
+        # protvino realtime weather parser
         parse(fetch_weather_data)
+        # open weather map realtime parser
         parse(fetch_openweather_data)
-        # try:
-        weather_data_list = fetch_forecast()
-        if weather_data_list:
-            save_forecast(weather_data_list)  # Сохраняем каждую таблицу отдельно
-        # except Exception as e:
-        #     print("forecast failed:", e)
-
+        # open weather map forecast parser
+        try:
+            weather_data_list = fetch_forecast()
+            if weather_data_list:
+                save_forecast(weather_data_list)
+        except Exception as e:
+             import traceback
+             print("forecast failed:", e)
+             print(traceback.format_exc())
+        # wait 
         time.sleep(FETCH_INTERVAL)
