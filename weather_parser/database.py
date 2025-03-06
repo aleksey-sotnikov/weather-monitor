@@ -95,7 +95,7 @@ def save_forecast(data):
 
     for row in data:
         cursor.execute("""
-            INSERT OR IGNORE INTO weather_forecast (source, timestamp, temperature, humidity, pressure, wind_speed, wind_gust, wind_dir)
+            INSERT OR IGNORE INTO weather_forecast (source, timestamp, temperature, humidity, pressure, wind_speed, wind_dir, wind_gust)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             row["source"],
