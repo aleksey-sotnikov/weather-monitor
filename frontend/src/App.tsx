@@ -2,6 +2,7 @@ import { FC, useState, useEffect } from "react";
 import LastData from "./components/LastData";
 import WeatherChart from "./components/WeatherChart";
 import ThemeSwitcher from "./components/ThemeSwitcher";
+import WeatherForecast from "./components/WeatherForecast";
 
 const App: FC = () => {
     const [darkMode, setDarkMode] = useState(() => {
@@ -27,6 +28,7 @@ const App: FC = () => {
             </header>
             <LastData />
             <WeatherChart />
+            <WeatherForecast />
         </div>
     );
 };

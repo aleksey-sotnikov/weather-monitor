@@ -11,3 +11,14 @@ export interface WeatherData {
     wind_dir?: number;
     wind_gust?: number;
 }
+
+export interface ForecastData {
+  source: string,
+  timestamp: number;
+  temperature?: number;
+  pressure?: number;
+  humidity?: number;
+  wind_speed?: number;
+  wind_dir?: number;
+  wind_gust?: number;
+}

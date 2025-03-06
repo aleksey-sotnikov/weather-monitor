@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { WeatherData } from "../types";
 import { fetchWeatherData } from "../services/weatherService";
 import "../styles/LastData.css"
+import { usePageVisibility } from "../services/usePageVisibility";
 
 const metrics: Record<string, any> = {
     temperature: {label:"t",unit:"°C"},
@@ -38,9 +39,8 @@ const LatestWeatherData: React.FC = () => {
         return latestData? Math.trunc((new Date().getTime()/1000 - latestData?.timestamp) / 60) : null;
     }, [latestData])
 
-    useEffect(() => {
-        const loadData = async () => {
-            setLoading(true);
+    const loadData = useCallback(async () => {
+        setLoading(true);
             try {
                 const dataList = await fetchWeatherData(['pro_main'], null, null, 1, 'DESC');
                 const data = dataList[dataList.length - 1];
@@ -59,13 +59,15 @@ const LatestWeatherData: React.FC = () => {
                 console.error("Ошибка загрузки данных:", error);
             }
             setLoading(false);
-        };
+    }, []);
 
+    useEffect(() => {
         loadData();
         const interval = setInterval(loadData, 30000); // Обновление каждые 30 секунд
-
         return () => clearInterval(interval);
     }, []);
+
+    usePageVisibility(loadData);
 
     return (
         <>

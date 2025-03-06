@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
 import { WeatherData } from "../types";
 import { fetchWeatherData } from "../services/weatherService";
 import "../styles/WeatherChart.css";
+import { usePageVisibility } from "../services/usePageVisibility";
 
 const metrics: Record<string, string> = {
     temperature: "Температура",
@@ -97,27 +98,29 @@ const WeatherChart: React.FC = () => {
     const [endDate, setEndDate] = useState<string>("");
     const [activeFilter, setActiveFilter] = useState<number | null>(isMobile ? 12 : 24);
 
-    useEffect(() => {
-        const loadData = async () => {
-            const result = await fetchWeatherData(selectedSources, startDate, endDate);
-            setData(smoothData(result, 4));
+    const loadData = useCallback(async () => {
+        const result = await fetchWeatherData(selectedSources, startDate, endDate);
+        setData(smoothData(result, 4));
 
-            if (selectedMetrics.includes("temperature") && result.length) {
-                const minEntry = result.reduce((min, entry) => 
-                    entry.temperature !== undefined && (min === null || min.temperature === undefined || entry.temperature < min.temperature) 
-                        ? entry 
-                        : min, 
-                    null as WeatherData | null
-                );
-    
-                setMinTemp(minEntry)
-            } else {
-                setMinTemp(null)
-            }
-        };
-        
+        if (selectedMetrics.includes("temperature") && result.length) {
+            const minEntry = result.reduce((min, entry) => 
+                entry.temperature !== undefined && (min === null || min.temperature === undefined || entry.temperature < min.temperature) 
+                    ? entry 
+                    : min, 
+                null as WeatherData | null
+            );
+
+            setMinTemp(minEntry)
+        } else {
+            setMinTemp(null)
+        }
+      }, []);
+
+    useEffect(() => {
         loadData();
     }, [startDate, endDate, selectedSources]);
+
+    usePageVisibility(loadData);
 
     const toggleMetric = (metric: string) => {
         setSelectedMetrics((prev) =>
