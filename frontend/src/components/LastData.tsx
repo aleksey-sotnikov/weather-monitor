@@ -71,14 +71,18 @@ const LatestWeatherData: React.FC = () => {
         <>
                 {latestData ? (
                     <>
-                    {lastUpdatedMins && (<p className="last-time">
+                    {lastUpdatedMins !== null && (<p className="last-time">
                         {lastUpdatedMins > 10 ? '' : lastUpdatedMins < 2 ? 'cейчас' : `${lastUpdatedMins} мин. назад`}
                         <span>{dateFormatter(latestData.timestamp)}</span>
                         </p>)}
                     <div className="latest-data">
                         <div className="widget">
                             <h3>Температура</h3>
-                            <p>{latestData.temperature}<span>°C</span></p>
+                            <p>
+                                {latestData.temperature && latestData.temperature > 0 && (<span>+</span>)}
+                                {latestData.temperature}
+                                <span>°C</span>
+                            </p>
                             
                         </div>
                         {latestData.pressure && (<div className="widget">
@@ -90,7 +94,7 @@ const LatestWeatherData: React.FC = () => {
                             
                         </div>)}
                         {latestData.wind_speed && (<div className="widget">
-                            <h3>Ветер {latestData.wind_dir && getWindDirection(latestData.wind_dir)}</h3>
+                            <h3>Ветер - {latestData.wind_dir && getWindDirection(latestData.wind_dir)}</h3>
                             <p>
                                 {Math.round(latestData.wind_speed)}
                                 <span>м/с</span>
