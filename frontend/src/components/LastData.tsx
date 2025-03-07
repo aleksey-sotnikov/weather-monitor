@@ -1,17 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import Loader from './Loader';
 import { WeatherData } from "../types";
 import { fetchWeatherData } from "../services/weatherService";
 import "../styles/LastData.css"
 import { usePageVisibility } from "../services/usePageVisibility";
 
-const metrics: Record<string, any> = {
-    temperature: {label:"t",unit:"°C"},
-    pressure: {label:"ps", unit:"мм рт.ст."},
-//    illuminance: "Освещенность",
-//    humidity: "Влажность",
-//    uv_index: "УФ индекс",
-//    ir_index: "ИК индекс",
-};
+// const metrics: Record<string, any> = {
+//     temperature: {label:"t",unit:"°C"},
+//     pressure: {label:"ps", unit:"мм рт.ст."},
+// //    illuminance: "Освещенность",
+// //    humidity: "Влажность",
+// //    uv_index: "УФ индекс",
+// //    ir_index: "ИК индекс",
+// };
 
 const dateFormatter = (tick: number) => {
     const date = new Date(tick * 1000);
@@ -73,37 +74,40 @@ const LatestWeatherData: React.FC = () => {
         <>
                 {latestData ? (
                     <>
-                    {lastUpdatedMins !== null && (<p className="last-time">
-                        {lastUpdatedMins > 10 ? '' : lastUpdatedMins < 2 ? 'cейчас' : `${lastUpdatedMins} мин. назад`}
-                        <span>{dateFormatter(latestData.timestamp)}</span>
-                        </p>)}
-                    <div className="latest-data">
-                        <div className="widget">
-                            <h3>Температура</h3>
-                            <p>
-                                {latestData.temperature && latestData.temperature > 0 && (<span>+</span>)}
-                                {latestData.temperature}
-                                <span>°C</span>
-                            </p>
-                            
+                        {lastUpdatedMins !== null && (<div className="last-time">
+                            { lastUpdatedMins > 10 ? '' : lastUpdatedMins < 2 ? 'сейчас' : `${lastUpdatedMins} мин. назад` }
+                            <span>{dateFormatter(latestData.timestamp)}</span>
+                            { loading && (<Loader />) }
+                        </div>)
+                        }
+                        
+                        <div className="latest-data">
+                            <div className="widget">
+                                <h3>Температура</h3>
+                                <p>
+                                    {latestData.temperature && latestData.temperature > 0 && (<span>+</span>)}
+                                    {latestData.temperature}
+                                    <span>°C</span>
+                                </p>
+                                
+                            </div>
+                            {latestData.pressure && (<div className="widget">
+                                <h3>Давление</h3>
+                                <p className="pressure">
+                                    {Math.round(latestData.pressure)}
+                                    <span>мм рт. ст.</span>
+                                </p>
+                                
+                            </div>)}
+                            {latestData.wind_speed && (<div className="widget">
+                                <h3>Ветер - {latestData.wind_dir && getWindDirection(latestData.wind_dir)}</h3>
+                                <p>
+                                    {Math.round(latestData.wind_speed)}
+                                    <span>м/с</span>
+                                </p>
+                                {latestData.wind_gust && (<h3>до {Math.round(latestData.wind_gust)} м/с</h3>)}
+                            </div>)}
                         </div>
-                        {latestData.pressure && (<div className="widget">
-                            <h3>Давление</h3>
-                            <p className="pressure">
-                                {Math.round(latestData.pressure)}
-                                <span>мм рт. ст.</span>
-                            </p>
-                            
-                        </div>)}
-                        {latestData.wind_speed && (<div className="widget">
-                            <h3>Ветер - {latestData.wind_dir && getWindDirection(latestData.wind_dir)}</h3>
-                            <p>
-                                {Math.round(latestData.wind_speed)}
-                                <span>м/с</span>
-                            </p>
-                            {latestData.wind_gust && (<h3>до {Math.round(latestData.wind_gust)} м/с</h3>)}
-                        </div>)}
-                    </div>
                     </>
                 ) : (
                     <p>Данные загружаются...</p>

@@ -5,7 +5,7 @@
 }
 
 .last-time span {
-    padding-left: 12px;
+    padding-left: 5px;
     color: #777;
 }
 
@@ -50,10 +50,19 @@
     font-size: 14px;}
 
 .last-time {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
     padding: 0;
     margin: 5px;
     font-family: monospace;
     font-size: 12px;
+}
+
+.loader {
+    width: 8px;
+    height: 8px;
 }
 
 @media (max-width: 800px) {
