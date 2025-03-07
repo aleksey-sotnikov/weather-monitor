@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { fetchWeatherForecast } from '../services/weatherService';
-import { usePageVisibility } from "../services/usePageVisibility";
-import { ForecastData } from "../types";
+import { usePageVisibility } from "../hooks/usePageVisibility";
+import { WeatherData } from "../types";
 import "../styles/WeatherForecast.css";
+import WeatherForecastChart from "./WeatherForecastChart";
 
 const tickFormatter = (tick: number) => {
   const date = new Date(tick * 1000);
@@ -21,13 +22,13 @@ function getWindDirection(degrees: number): string {
 }
 
 const WeatherForecast = () => {
-  const [forecast, setForecast] = useState<ForecastData[]>([]);
+  const [forecast, setForecast] = useState<WeatherData[]>([]);
 
   // Функция загрузки данных
-  const loadData = useCallback(async () => {
-    const data = await fetchWeatherForecast(['owm_fc'],new Date().toDateString());
+  const loadData = async () => {
+    const data = await fetchWeatherForecast(['owm_fc'], new Date().toDateString());
     setForecast(data);
-  }, []);
+  };
 
   useEffect(() => {
      // Загружаем данные при изменении зависимостей
@@ -40,7 +41,7 @@ const WeatherForecast = () => {
     <>
     <h2 style={{margin:"10px 0"}}>Прогноз</h2>
     <div className="forecast-container">
-      {forecast.length > 0 ? (
+      {forecast.length > 0 && (
         forecast.map((entry, index) => (
           <div key={index} className="forecast-card">
             <div className="forecast-date">
@@ -54,10 +55,13 @@ const WeatherForecast = () => {
             </div>
           </div>
         ))
-      ) : (
-        <p>Загрузка прогноза...</p>
       )}
     </div>
+    <WeatherForecastChart
+           data={forecast} 
+           parameters={["temperature", "pressure"]} 
+           title="Температура (°C)" 
+        />
     </>
   );
 };

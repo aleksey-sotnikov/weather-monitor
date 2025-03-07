@@ -59,3 +59,8 @@ input[type="datetime-local"] {
   background-color: var(--bg-color);
   color: var(--text-color);
 }
+
+.apexcharts-tooltip {
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}

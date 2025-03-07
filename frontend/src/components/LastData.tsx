@@ -3,7 +3,7 @@ import Loader from './Loader';
 import { WeatherData } from "../types";
 import { fetchWeatherData } from "../services/weatherService";
 import "../styles/LastData.css"
-import { usePageVisibility } from "../services/usePageVisibility";
+import { usePageVisibility } from "../hooks/usePageVisibility";
 
 // const metrics: Record<string, any> = {
 //     temperature: {label:"t",unit:"°C"},

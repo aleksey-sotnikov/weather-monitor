@@ -2,21 +2,17 @@ import React from "react";
 import "../styles/ThemeSwitcher.css"
 import { SunIcon } from "./SunIcon";
 import { MoonIcon } from "./MoonIcon";
-//import { Sun, Moon } from "lucide-react"; // Используем иконки Sun и Moon
+import { useDarkMode } from "../context/DarkModeContext";
 
-interface ThemeSwitcherProps {
-    isDarkMode: boolean;
-    toggleTheme: () => void;
-}
-
-const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ isDarkMode, toggleTheme }) => {
+const ThemeSwitcher: React.FC = () => {
+    const { darkMode, toggleTheme } = useDarkMode();
     return (
         <label className="switch">
-            <input type="checkbox" checked={isDarkMode} onChange={toggleTheme} />
+            <input type="checkbox" checked={darkMode} onChange={toggleTheme} />
             <span className="slider">
                 {/* {isDarkMode ? <Moon className="icon dark-icon" /> : <Sun className="icon light-icon" />} */}
             </span>
-            {isDarkMode ?  <MoonIcon /> : <SunIcon />}
+            {darkMode ?  <MoonIcon /> : <SunIcon />}
             </label>
     );
 };

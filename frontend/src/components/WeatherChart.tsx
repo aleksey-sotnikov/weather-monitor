@@ -1,19 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
-import { WeatherData } from "../types";
+import Loader from "./Loader";
+import { WeatherData, Metrics } from "../types";
 import { fetchWeatherData } from "../services/weatherService";
 import "../styles/WeatherChart.css";
-import { usePageVisibility } from "../services/usePageVisibility";
-
-const metrics: Record<string, string> = {
-    temperature: "Температура",
-    pressure: "Давление",
-    illuminance: "Освещенность",
-    humidity: "Влажность",
-    uv_index: "УФ индекс",
-    ir_value: "ИК индекс",
-    wind_speed: "Ветер",
-};
+import { usePageVisibility } from "../hooks/usePageVisibility";
+import WeatherForecastChart from "./WeatherForecastChart";
 
 const sources: Record<string, string> = {
     pro_main: "Основная станция",
@@ -88,17 +80,19 @@ const smoothData = (data: WeatherData[], level: number): WeatherData[] => {
 
 const WeatherChart: React.FC = () => {
     const [data, setData] = useState<WeatherData[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
     const [minTemp, setMinTemp] = useState<WeatherData | null>();
     const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768);
 
-    const [selectedMetrics, setSelectedMetrics] = useState<string[]>(["temperature", "pressure"]);
+    const [selectedMetrics, setSelectedMetrics] = useState<(keyof Omit<WeatherData, 'source' | 'timestamp'>)[]>(["temperature", "pressure"]);
     const [selectedSources, setSelectedSources] = useState<string[]>(["pro_main"]);
 
     const [startDate, setStartDate] = useState<string>(getLocalDateTime(new Date(Date.now() - (isMobile ? 12:24) * 60 * 60 * 1000)));
     const [endDate, setEndDate] = useState<string>("");
     const [activeFilter, setActiveFilter] = useState<number | null>(isMobile ? 12 : 24);
 
-    const loadData = useCallback(async () => {
+    const loadData = async () => {
+        setLoading(true);
         const result = await fetchWeatherData(selectedSources, startDate, endDate);
         setData(smoothData(result, 4));
 
@@ -114,7 +108,8 @@ const WeatherChart: React.FC = () => {
         } else {
             setMinTemp(null)
         }
-      }, []);
+        setLoading(false);
+      };
 
     useEffect(() => {
         loadData();
@@ -122,7 +117,7 @@ const WeatherChart: React.FC = () => {
 
     usePageVisibility(loadData);
 
-    const toggleMetric = (metric: string) => {
+    const toggleMetric = (metric: keyof Omit<WeatherData, 'source' | 'timestamp'>) => {
         setSelectedMetrics((prev) =>
             prev.includes(metric) ? prev.filter((m) => m !== metric) : [...prev, metric]
         );
@@ -146,7 +141,15 @@ const WeatherChart: React.FC = () => {
         <div className="dashboard-content">
             {/* Блок с графиком */}
             <div className="chart-container">
-                <ResponsiveContainer width="100%" height={isMobile ? 260 : 400}>
+                { loading && (<Loader />) }
+                <WeatherForecastChart
+                data={data} 
+                parameters={selectedMetrics} 
+                title=" "
+                height={isMobile ? 260 : 400}
+                />
+                
+                {/* <ResponsiveContainer width="100%" height={isMobile ? 260 : 400}>
                     <LineChart data={data}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#555"/>
                         <XAxis
@@ -162,7 +165,7 @@ const WeatherChart: React.FC = () => {
 
                         <Legend />
 
-                        {/* Графики */}
+                        {/* Графики * /}
                         
                         {selectedMetrics.includes("humidity") && (
                             <Line type="monotone" yAxisId="humidity" dataKey="humidity" stroke="#52be80" name="Влажность" dot={false} />
@@ -186,21 +189,21 @@ const WeatherChart: React.FC = () => {
                             <Line type="monotone" yAxisId="temperature" dataKey="temperature" stroke="#e74c3c" name="Температура" dot={false} strokeWidth={4} />
                         )}
 
-                        {/* Определение осей */}
+                        {/* Определение осей * /}
                         {selectedMetrics.includes("humidity") && (<YAxis yAxisId="humidity" stroke="#52be80" orientation="right" domain={["auto", "auto"]} />)}
                         {selectedMetrics.includes("wind_speed") && (<YAxis yAxisId="wind_speed" stroke="#52be80" orientation="right" domain={["auto", "auto"]} />)}
                         {selectedMetrics.includes("illuminance") && (<YAxis yAxisId="illuminance" stroke="#f3b700" domain={["auto", "auto"]} />)}
                         {selectedMetrics.includes("uv_index") && (<YAxis yAxisId="uv_index" stroke="#876FD4" orientation="right" domain={["auto", "auto"]} />)}
                         {selectedMetrics.includes("ir_value") && (<YAxis yAxisId="ir_value" stroke="#F5921B" orientation="right" domain={["auto", "auto"]} />)}
-                        <YAxis yAxisId="pressure" stroke="#2471a3" orientation="right" domain={["auto", "auto"]} interval={'preserveStart'} strokeWidth={2} />
-                        <YAxis yAxisId="temperature" stroke="#e74c3c" domain={["auto", "auto"]} interval={'preserveStartEnd'} strokeWidth={3}/>
+                        <YAxis yAxisId="pressure" stroke="#2471a3"  domain={["auto", "auto"]} interval={'preserveStart'} strokeWidth={2} />
+                        <YAxis yAxisId="temperature" stroke="#e74c3c" orientation="right" domain={["auto", "auto"]} interval={'preserveStartEnd'} strokeWidth={3}/>
                         
                         {selectedMetrics.includes('temperature') && minTemp && (
                             <ReferenceLine yAxisId="temperature" y={minTemp.temperature} stroke="#e74c3c" 
                             label={minTemp.temperature + "°С"} strokeWidth={0.4} strokeDasharray="6 3"/>)}
                         
                     </LineChart>
-                </ResponsiveContainer>
+                </ResponsiveContainer> */}
                 <div className="filter-buttons">
                     {timeRanges.map(({ label, value }) => (
                         <button 
@@ -216,14 +219,14 @@ const WeatherChart: React.FC = () => {
             {/* Блок с фильтрами */}
             <div className="filters-container">
                 <h3>Выберите показатели:</h3>
-                {Object.keys(metrics).map((metric) => (
+                {Object.keys(Metrics).map((metric: string) => (
                     <label key={metric} className="checkbox-label">
                         <input
                             type="checkbox"
-                            checked={selectedMetrics.includes(metric)}
-                            onChange={() => toggleMetric(metric)}
+                            checked={selectedMetrics.includes(metric as keyof Omit<WeatherData, 'source' | 'timestamp'>)}
+                            onChange={() => toggleMetric(metric as keyof Omit<WeatherData, 'source' | 'timestamp'>)}
                         />
-                        {metrics[metric]}
+                        {Metrics[metric as keyof Omit<WeatherData, 'source' | 'timestamp'>]}
                     </label>
                 ))}
 

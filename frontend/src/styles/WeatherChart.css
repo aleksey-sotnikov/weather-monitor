@@ -6,6 +6,12 @@
     gap: 10px;
 }
 
+.dashboard-content .loader {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+}
+
 .filters-container {
     background: var(--chart-bg);
     padding: 15px;
