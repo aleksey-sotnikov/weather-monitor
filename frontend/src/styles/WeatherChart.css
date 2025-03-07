@@ -8,6 +8,7 @@
 
 .dashboard-content .loader {
     position: absolute;
+    margin: 8px;
     width: 12px;
     height: 12px;
 }
@@ -22,7 +23,7 @@
 .chart-container {
     flex-grow: 1;
     background: var(--chart-bg);
-    padding: 15px;
+    padding: 0;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
@@ -83,7 +84,7 @@
     margin: 10px 0;
     overflow-x: auto;
     white-space: nowrap;
-    padding-bottom: 5px;
+    padding: 0 0 5px 15px;
     scroll-padding-left: 10px; /* Смещение первой кнопки вправо */
     -webkit-overflow-scrolling: touch; /* Улучшение плавности прокрутки на iOS */
 }

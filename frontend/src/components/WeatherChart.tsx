@@ -145,7 +145,6 @@ const WeatherChart: React.FC = () => {
                 <WeatherForecastChart
                 data={data} 
                 parameters={selectedMetrics} 
-                title=" "
                 height={isMobile ? 260 : 400}
                 />
                 

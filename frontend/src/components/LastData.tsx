@@ -5,15 +5,6 @@ import { fetchWeatherData } from "../services/weatherService";
 import "../styles/LastData.css"
 import { usePageVisibility } from "../hooks/usePageVisibility";
 
-// const metrics: Record<string, any> = {
-//     temperature: {label:"t",unit:"°C"},
-//     pressure: {label:"ps", unit:"мм рт.ст."},
-// //    illuminance: "Освещенность",
-// //    humidity: "Влажность",
-// //    uv_index: "УФ индекс",
-// //    ir_index: "ИК индекс",
-// };
-
 const dateFormatter = (tick: number) => {
     const date = new Date(tick * 1000);
     const dt = date.toLocaleString("ru-RU", {

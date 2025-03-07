@@ -60,7 +60,7 @@ const WeatherForecast = () => {
     <WeatherForecastChart
            data={forecast} 
            parameters={["temperature", "pressure"]} 
-           title="Температура (°C)" 
+           brash={true}
         />
     </>
   );
