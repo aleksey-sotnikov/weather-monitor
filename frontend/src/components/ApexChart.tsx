@@ -59,6 +59,7 @@ const WeatherForecastChart: React.FC<TimeSeriesChartProps> = ({ data, parameters
     theme: {
         mode: darkMode ? 'dark' : 'light'
     },
+    colors: ['#66DA26', '#2E93fA', '#f2f754', "#828282", "#9a28e0", '#e91e4d','#FF9800', "#c3ff00"],
     xaxis: {
       type: 'datetime', // Ось X — время
       labels: {

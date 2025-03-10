@@ -4,6 +4,22 @@
     overflow-x: auto;
     padding: 0;
   }
+
+  .forecast-day {
+    font-weight: bold;
+    font-size: 24px;
+    align-content: center;
+    transform: rotate(-90deg);
+    /* Legacy vendor prefixes that you probably don't need... */
+    /* Safari */
+    -webkit-transform: rotate(-90deg);
+    /* Firefox */
+    -moz-transform: rotate(-90deg);
+    /* IE */
+    -ms-transform: rotate(-90deg);
+    /* Opera */
+    -o-transform: rotate(-90deg);
+  }
   
   .forecast-card {
     flex: 0 0 auto;
@@ -32,6 +48,7 @@
   
   .forecast-temp {
     font-size: 20px;
+    font-weight: bold;
     margin-bottom: 5px;
   }
   

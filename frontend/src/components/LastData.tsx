@@ -23,6 +23,25 @@ function getWindDirection(degrees: number): string {
     return directions[index];
 }
 
+function startTask(task: Function) {
+    const now = new Date();
+    const seconds = now.getSeconds();
+
+    // Вычисляем, сколько миллисекунд осталось до следующей 30-й секунды
+    let delay = (30 - (seconds % 30)) * 1000;
+    if (delay < 0) delay += 30000; // Если уже прошло больше 30 секунд
+
+    const randomOffset = (Math.random() * 10000) - 5000; // Разброс -5 до +5 секунд
+
+    // Запускаем задачу через delay миллисекунд
+    var cancel = setTimeout(() => {
+        task(); // Выполняем задачу
+        setInterval(task, 33000 + randomOffset); // Запускаем интервал
+    }, delay);
+    return cancel;
+}
+
+
 const LatestWeatherData: React.FC = () => {
     const [latestData, setLatestData] = useState<WeatherData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -55,7 +74,7 @@ const LatestWeatherData: React.FC = () => {
 
     useEffect(() => {
         loadData();
-        const interval = setInterval(loadData, 30000); // Обновление каждые 30 секунд
+        const interval = startTask(loadData); // Обновление в каждые 30 секунд
         return () => clearInterval(interval);
     }, []);
 

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
+//import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
 import Loader from "./Loader";
 import { WeatherData, Metrics } from "../types";
 import { fetchWeatherData } from "../services/weatherService";
 import "../styles/WeatherChart.css";
 import { usePageVisibility } from "../hooks/usePageVisibility";
-import WeatherForecastChart from "./WeatherForecastChart";
+import WeatherForecastChart from "./ApexChart";
 
 const sources: Record<string, string> = {
     pro_main: "Основная станция",
