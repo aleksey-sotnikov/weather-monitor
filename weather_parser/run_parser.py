@@ -16,6 +16,24 @@ def parse(parser):
             print("round failed:", e)
             print(traceback.format_exc())
 
+def get_sleep_interval():
+    # Получаем текущее время
+    now = datetime.now()
+    
+    # Вычисляем, сколько секунд осталось до следующей минуты, кратной 4
+    next_run_minute = (now.minute // 4 + 1) * 4  # Следующая минута, кратная 4
+    if next_run_minute >= 60:  # Если вышли за пределы часа (например, 60)
+        next_run_minute = 0  # Переходим к следующему часу
+    
+    # Вычисляем время ожидания
+    wait_time = (next_run_minute - now.minute) * 60 - now.second
+    
+    # Если wait_time отрицательное (например, сейчас 3:59:50), корректируем
+    if wait_time < 0:
+        wait_time += 240  # Добавляем 4 минуты (240 секунд)
+    
+    return wait_time + 20 # Добавляем 20 секунд
+
 if __name__ == "__main__":
     # Инициализация БД перед запуском
     create_tables() 
@@ -34,4 +52,4 @@ if __name__ == "__main__":
              print("forecast failed:", e)
              print(traceback.format_exc())
         # wait 
-        time.sleep(FETCH_INTERVAL)
+        time.sleep(get_sleep_interval())
