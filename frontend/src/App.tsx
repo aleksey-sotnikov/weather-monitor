@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from "react";
 import LastData from "./components/LastData";
-import WeatherChart from "./components/WeatherChart";
+import WeatherReal from "./components/WeatherReal";
 import ThemeSwitcher from "./components/ThemeSwitcher";
 import WeatherForecast from "./components/WeatherForecast";
 import { DarkModeProvider } from "./context/DarkModeContext"; // Импортируем провайдер
@@ -15,7 +15,7 @@ const App: FC = () => {
                     <ThemeSwitcher />
                 </header>
                 <LastData />
-                <WeatherChart />
+                <WeatherReal />
                 <WeatherForecast />
             </div>
         </DarkModeProvider>

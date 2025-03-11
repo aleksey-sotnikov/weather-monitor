@@ -2,23 +2,31 @@
     display: flex;
     gap: 10px;
     overflow-x: auto;
-    padding: 0;
+    position: relative;
+    align-items: center;
+    cursor: grab; /* Курсор "захвата" при наведении */
+  }
+
+  .forecast-container:active {
+    cursor: grabbing; /* Курсор "захвачено" при клике */
   }
 
   .forecast-day {
     font-weight: bold;
-    font-size: 24px;
+    font-size: 26px;
+    position: sticky;
+    left: 0px;
+    background-color: var(--bg-color); /* Фон, чтобы текст не накладывался на другие элементы */
+    z-index: 1; /* Чтобы текст был поверх других элементов */
+    padding: 50px 20px; /* Отступ для разделения дней */
     align-content: center;
-    transform: rotate(-90deg);
-    /* Legacy vendor prefixes that you probably don't need... */
-    /* Safari */
-    -webkit-transform: rotate(-90deg);
-    /* Firefox */
-    -moz-transform: rotate(-90deg);
-    /* IE */
-    -ms-transform: rotate(-90deg);
-    /* Opera */
-    -o-transform: rotate(-90deg);
+    
+    -webkit-box-shadow: 10px 0px 6px -5px rgba(30, 30, 30, 0.5);
+    -moz-box-shadow:    10px 0px 6px -5px rgba(30, 30, 30, 0.5);
+    box-shadow:         10px 0px 6px -5px rgba(30, 30, 30, 0.5);
+
+    writing-mode: sideways-lr;
+    
   }
   
   .forecast-card {
@@ -33,6 +41,7 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     margin: 5px 0;
+    user-select: none;
   }
   
   .forecast-card:hover {

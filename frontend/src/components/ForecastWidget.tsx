@@ -32,7 +32,7 @@ const tickTimeFormatter = (tick: number) => {
 export const ForecastWidget: React.FC<ForecastWidgetProps> = ({ data }) => {
     return (
         <>
-         {(new Date(data.timestamp * 1000).getHours() === 0) && (<span className="forecast-day">{tickDateFormatter(data.timestamp)}</span>)}
+         {(new Date(data.timestamp * 1000).getHours() === 0) && (<div className="forecast-day">{tickDateFormatter(data.timestamp)}</div>)}
          <div className="forecast-card">
             <div className="forecast-date">
                 {tickTimeFormatter(data.timestamp)}
