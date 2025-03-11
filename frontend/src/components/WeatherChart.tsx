@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-//import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from "recharts";
 import Loader from "./Loader";
 import { WeatherData, Metrics } from "../types";
 import { fetchWeatherData } from "../services/weatherService";
@@ -78,10 +77,142 @@ const smoothData = (data: WeatherData[], level: number): WeatherData[] => {
     });
 };
 
+export function smoothDataPreservingExtremes(data: WeatherData[], alpha: number, threshold: number): WeatherData[] {
+    if (data.length === 0) return [];
+
+    let smoothedData: WeatherData[] = [];
+    let prevSmoothed: WeatherData | null = null;
+
+    for (const entry of data) {
+        let smoothedEntry: WeatherData = { ...entry };
+
+        if (prevSmoothed) {
+            for (const key of Object.keys(entry) as (keyof WeatherData)[]) {
+                if (typeof entry[key] === "number" && typeof prevSmoothed[key] === "number") {
+                    let diff = Math.abs((entry[key] as number) - (prevSmoothed[key] as number));
+                    
+                    // Если изменение слишком резкое, ослабляем сглаживание
+                    let adjustedAlpha = diff > threshold ? alpha * 0.5 : alpha;
+
+                    (smoothedEntry[key] as number) = 
+                        adjustedAlpha * (entry[key] as number) + (1 - adjustedAlpha) * (prevSmoothed[key] as number);
+                }
+            }
+        }
+
+        smoothedData.push(smoothedEntry);
+        prevSmoothed = smoothedEntry;
+    }
+
+    return smoothedData;
+}
+
+// extrema
+function findExtrema(data : WeatherData[], key: keyof Omit<WeatherData, 'source' | 'timestamp'>) {
+    // Извлекаем значения и временные метки для указанного ключа
+    const values = data
+      //.filter(entry => entry[key] !== null && entry[key] !== undefined)
+      .map(entry => entry[key]);
+
+    // Вычисляем первую производную (разности между соседними значениями)
+    const derivative = [];
+    for (let i = 0; i < values.length - 1; i++) {
+        values[i + 1] !== undefined && values[i] !== undefined && derivative.push(Math.round((values[i + 1]! - values[i]!) * 1000) / 1000);
+    }
+  
+    //console.log('d', derivative)
+    
+    // Ищем экстремумы: максимум или минимум
+    let extremaMaxIndices: number[] = [];
+    let extremaMinIndices: number[] = [];
+    for (let i = 1; i < derivative.length - 1; i++) {
+      // if (Math.abs(derivative[i - 1]) < threshold ) continue;
+      const lastMaxExtIndex = extremaMaxIndices.length ? extremaMaxIndices[extremaMaxIndices.length-1] : -1;  
+      const lastMinExtIndex = extremaMinIndices.length ? extremaMinIndices[extremaMinIndices.length-1] : -1;  
+
+      if ((lastMaxExtIndex >= 0 && i - lastMaxExtIndex < 20 && Math.abs(data[i].temperature!-data[lastMaxExtIndex].temperature!) < 3)
+        || (lastMinExtIndex >= 0 && i - lastMinExtIndex < 20 && Math.abs(data[i].temperature!-data[lastMinExtIndex].temperature!) < 3))
+            continue;
+
+      if (derivative[i - 1] > 0 && derivative[i] <= 0) {
+        //extremaIndices.push(i);
+        // Максимум: производная меняет знак с положительного на отрицательное
+        if (!extremaMaxIndices.length){
+            //console.log("push first up", i, data[i])
+            extremaMaxIndices.push(i);
+        }
+        else if ((lastMaxExtIndex < lastMinExtIndex || lastMinExtIndex === -1) && Math.abs(Math.abs(data[i].temperature ?? 0) - Math.abs(data[lastMaxExtIndex > lastMinExtIndex? lastMaxExtIndex : lastMinExtIndex].temperature ?? 0)) > 3 ){
+            //console.log("push up", i, data[i])
+            extremaMaxIndices.push(i);
+        } 
+        else if (lastMaxExtIndex > lastMinExtIndex && (data[i].temperature ?? 0) > (data[lastMaxExtIndex].temperature ?? 0)) {
+            //console.log("move up" , i, lastMaxExtIndex, ': ' , derivative[i - 1], derivative[i], ' : ' ,  data[i].temperature, data[lastMaxExtIndex].temperature)
+            extremaMaxIndices[extremaMaxIndices.length - 1] = i;
+         }
+         
+            
+      } else if (derivative[i - 1] < 0 && derivative[i] >= 0) {
+        //extremaIndices.push(i);
+        // Минимум: производная меняет знак с отрицательного на положительное
+        if (!extremaMinIndices.length){
+            //console.log("push first down", i, data[i])
+            extremaMinIndices.push(i);
+        }
+        else if ((lastMaxExtIndex > lastMinExtIndex  || lastMaxExtIndex === -1) && Math.abs(Math.abs(data[i].temperature ?? 0) - Math.abs(data[lastMaxExtIndex > lastMinExtIndex ? lastMaxExtIndex : lastMinExtIndex].temperature ?? 0)) > 3){
+            //console.log("push down", i, data[i].temperature)
+            extremaMinIndices.push(i);
+        } 
+        else if (lastMaxExtIndex < lastMinExtIndex && (data[i].temperature ?? 0) < (data[lastMinExtIndex].temperature ?? 0)) {
+            //console.log("move down", i, data[i])
+            extremaMinIndices[extremaMinIndices.length - 1] = i;
+         }
+         
+      }
+    }
+    
+    const corrWindow = 100
+    // локальная корректировка
+    extremaMaxIndices = extremaMaxIndices.map((exIdx) => {
+        let min = exIdx - corrWindow / 2
+        if (min < 0) min = 0
+        let max = exIdx + corrWindow / 2
+        if (max > data.length) max = data.length
+        const windowSet = data.slice(min, max)
+        let maxVal = [exIdx, data[exIdx].temperature!]
+        for (let i = 0; i < windowSet.length; i++) {
+            if (windowSet[i].temperature! > maxVal[1])
+                maxVal = [min + i, windowSet[i].temperature!]
+        }
+
+        return maxVal[0]
+    })
+
+    extremaMinIndices = extremaMinIndices.map((exIdx) => {
+        let min = exIdx - corrWindow / 2
+        if (min < 0) min = 0
+        let max = exIdx + corrWindow / 2
+        if (max > data.length) max = data.length
+        const windowSet = data.slice(min, max)
+        let minVal = [exIdx, data[exIdx].temperature!]
+        for (let i = 0; i < windowSet.length; i++) {
+            if (windowSet[i].temperature! < minVal[1])
+                minVal = [min + i, windowSet[i].temperature!]
+        }
+
+        return minVal[0]
+    })
+
+    extremaMaxIndices = extremaMaxIndices.filter((exIdx, index) => index == 0 || exIdx - extremaMaxIndices[index - 1] > 60)
+    extremaMinIndices = extremaMinIndices.filter((exIdx, index) => index == 0 || exIdx - extremaMinIndices[index - 1] > 60)
+
+    // Возвращаем данные экстремумов
+    return data.filter((data, index) => extremaMaxIndices.includes(index) || extremaMinIndices.includes(index));
+  }
+
 const WeatherChart: React.FC = () => {
     const [data, setData] = useState<WeatherData[]>([]);
+    const [points, setPoints] = useState<WeatherData[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    const [minTemp, setMinTemp] = useState<WeatherData | null>();
     const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768);
 
     const [selectedMetrics, setSelectedMetrics] = useState<(keyof Omit<WeatherData, 'source' | 'timestamp'>)[]>(["temperature", "pressure"]);
@@ -94,20 +225,11 @@ const WeatherChart: React.FC = () => {
     const loadData = async () => {
         setLoading(true);
         const result = await fetchWeatherData(selectedSources, startDate, endDate);
-        setData(smoothData(result, 4));
+        const smoothResult = smoothDataPreservingExtremes(result, 0.25, 8);
+        setData(smoothResult);
 
-        if (selectedMetrics.includes("temperature") && result.length) {
-            const minEntry = result.reduce((min, entry) => 
-                entry.temperature !== undefined && (min === null || min.temperature === undefined || entry.temperature < min.temperature) 
-                    ? entry 
-                    : min, 
-                null as WeatherData | null
-            );
+        setPoints(findExtrema(smoothResult, 'temperature'))
 
-            setMinTemp(minEntry)
-        } else {
-            setMinTemp(null)
-        }
         setLoading(false);
       };
 
@@ -143,66 +265,10 @@ const WeatherChart: React.FC = () => {
             <div className="chart-container">
                 { loading && (<Loader />) }
                 <WeatherForecastChart
-                data={data} 
+                data={data} points={points}
                 parameters={selectedMetrics} 
                 height={isMobile ? 260 : 400}
                 />
-                
-                {/* <ResponsiveContainer width="100%" height={isMobile ? 260 : 400}>
-                    <LineChart data={data}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#555"/>
-                        <XAxis
-                            dataKey="timestamp"
-                            padding={{ right: 10 }} 
-                            tickFormatter={tickFormatter}
-                        />
-
-                        <Tooltip
-                            contentStyle={{ backgroundColor: "var(--chart-bg)", color: "var(--chart-text)" }} 
-                            labelFormatter={tickFormatter}
-                        />
-
-                        <Legend />
-
-                        {/* Графики * /}
-                        
-                        {selectedMetrics.includes("humidity") && (
-                            <Line type="monotone" yAxisId="humidity" dataKey="humidity" stroke="#52be80" name="Влажность" dot={false} />
-                        )}
-                        {selectedMetrics.includes("wind_speed") && (
-                            <Line type="monotone" yAxisId="wind_speed" dataKey="wind_speed" stroke="#52be80" name="Ветер" dot={false} />
-                        )}
-                        {selectedMetrics.includes("illuminance") && (
-                            <Line type="monotone" yAxisId="illuminance" dataKey="illuminance" stroke="#f3b700" name="Освещенность" dot={false} />
-                        )}
-                        {selectedMetrics.includes("uv_index") && (
-                            <Line type="monotone" yAxisId="uv_index" dataKey="uv_index" stroke="#876FD4" name="УФ индекс" dot={false} />
-                        )}
-                        {selectedMetrics.includes("ir_value") && (
-                            <Line type="monotone" yAxisId="ir_value" dataKey="ir_value" stroke="#F5921B" name="ИК индекс" dot={false} />
-                        )}
-                        {selectedMetrics.includes("pressure") && (
-                            <Line type="monotone" yAxisId="pressure" dataKey="pressure" stroke="#2471a3" name="Давление" dot={false} strokeWidth={3}/>
-                        )}
-                        {selectedMetrics.includes("temperature") && (
-                            <Line type="monotone" yAxisId="temperature" dataKey="temperature" stroke="#e74c3c" name="Температура" dot={false} strokeWidth={4} />
-                        )}
-
-                        {/* Определение осей * /}
-                        {selectedMetrics.includes("humidity") && (<YAxis yAxisId="humidity" stroke="#52be80" orientation="right" domain={["auto", "auto"]} />)}
-                        {selectedMetrics.includes("wind_speed") && (<YAxis yAxisId="wind_speed" stroke="#52be80" orientation="right" domain={["auto", "auto"]} />)}
-                        {selectedMetrics.includes("illuminance") && (<YAxis yAxisId="illuminance" stroke="#f3b700" domain={["auto", "auto"]} />)}
-                        {selectedMetrics.includes("uv_index") && (<YAxis yAxisId="uv_index" stroke="#876FD4" orientation="right" domain={["auto", "auto"]} />)}
-                        {selectedMetrics.includes("ir_value") && (<YAxis yAxisId="ir_value" stroke="#F5921B" orientation="right" domain={["auto", "auto"]} />)}
-                        <YAxis yAxisId="pressure" stroke="#2471a3"  domain={["auto", "auto"]} interval={'preserveStart'} strokeWidth={2} />
-                        <YAxis yAxisId="temperature" stroke="#e74c3c" orientation="right" domain={["auto", "auto"]} interval={'preserveStartEnd'} strokeWidth={3}/>
-                        
-                        {selectedMetrics.includes('temperature') && minTemp && (
-                            <ReferenceLine yAxisId="temperature" y={minTemp.temperature} stroke="#e74c3c" 
-                            label={minTemp.temperature + "°С"} strokeWidth={0.4} strokeDasharray="6 3"/>)}
-                        
-                    </LineChart>
-                </ResponsiveContainer> */}
                 <div className="filter-buttons">
                     {timeRanges.map(({ label, value }) => (
                         <button 

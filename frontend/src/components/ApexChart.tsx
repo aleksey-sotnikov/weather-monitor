@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 interface TimeSeriesChartProps {
     data: WeatherData[];
+    points?: WeatherData[];
     parameters: (keyof Omit<WeatherData, 'source' | 'timestamp'>)[];
     title?: string;
     height?: number;
@@ -13,7 +14,7 @@ interface TimeSeriesChartProps {
   }
   
  
-const WeatherForecastChart: React.FC<TimeSeriesChartProps> = ({ data, parameters, height, brash }) => {
+const WeatherForecastChart: React.FC<TimeSeriesChartProps> = ({ data, points, parameters, height, brash }) => {
   const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768);
   const { darkMode } = useDarkMode();
 
@@ -27,10 +28,34 @@ const WeatherForecastChart: React.FC<TimeSeriesChartProps> = ({ data, parameters
     opposite: index % 2 === 0,
     labels: {
       formatter: function (val: number) {
-        return (parameter === 'temperature' && val > 0 ? '+' : '') + val.toFixed(0);
+        return (parameter === 'temperature' && val > 0 ? '+' : '') + (val !== undefined && val.toFixed(2));
       },
     },
   })));
+
+  const getPoints = (() => (points ? points.map((point) => ({
+    x: point.timestamp * 1000,
+    y: point.temperature,
+    marker: {
+      size: 0,
+      // fillColor: 'transparent',
+      // strokeColor: 'var(--border-color)',
+      // radius: 2,
+      // cssClass: 'apexcharts-custom-class'
+    },
+    label: {
+      borderColor: 'transparent',
+      offsetY: -2,
+      offsetX: data[data.length -1].timestamp - point.timestamp < 300 ? -13 : 0,
+      style: {
+        color: '#999999',
+        fontSize: '12px',
+        background: 'transparent',
+      },
+
+      text: (point.temperature && point.temperature > 0 ? "+":"")+(point.temperature &&point.temperature.toFixed(0)),
+    }
+  } as PointAnnotations)) : []));
 
   // Подготовка данных для графика
   const series = parameters.map(parameter => ({
@@ -50,7 +75,7 @@ const WeatherForecastChart: React.FC<TimeSeriesChartProps> = ({ data, parameters
       foreColor: "var(--text-color)",
       parentHeightOffset: 10,
       zoom: {
-        enabled: false, // Включить зум
+      //  enabled: false, // Включить зум
       },
       toolbar: {
         show: false
@@ -68,6 +93,9 @@ const WeatherForecastChart: React.FC<TimeSeriesChartProps> = ({ data, parameters
       },
     },
     yaxis: yAxis(),
+    annotations: {
+      points: getPoints(),
+    },
     tooltip: {
       x: {
         format: 'dd MMM yy HH:mm', // Формат даты в тултипе
@@ -139,7 +167,6 @@ const WeatherForecastChart: React.FC<TimeSeriesChartProps> = ({ data, parameters
         ...options,
         chart: {
             ...options.chart,
-            
         },
         theme: {
             mode: darkMode ? "dark" : "light",
@@ -150,9 +177,18 @@ const WeatherForecastChart: React.FC<TimeSeriesChartProps> = ({ data, parameters
 useEffect(() => {
   setOptions({
     ...options,
-    yaxis: yAxis(),
+    yaxis: yAxis()
   })
 }, [parameters]);
+
+useEffect(() => {
+  setOptions({
+    ...options,
+    annotations: {
+      points: getPoints(),
+    },
+  })
+}, [data, parameters]);
 
   return (
     <>
