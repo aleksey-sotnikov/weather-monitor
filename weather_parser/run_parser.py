@@ -17,16 +17,23 @@ def parse(parser):
             print(traceback.format_exc())
 
 def get_sleep_interval():
-    # Получаем текущее время
-    now = datetime.now()
+    # Получаем текущее время в секундах с начала эпохи
+    current_time = time.time()
     
-    # Вычисляем, сколько секунд осталось до следующей минуты, кратной 4
-    next_run_minute = (now.minute // 4 + 1) * 4  # Следующая минута, кратная 4
-    if next_run_minute >= 60:  # Если вышли за пределы часа (например, 60)
+    # Преобразуем текущее время в локальное время
+    local_time = time.localtime(current_time)
+    
+    # Получаем текущие минуты и секунды
+    current_minute = local_time.tm_min
+    current_second = local_time.tm_sec
+    
+    # Вычисляем следующую минуту, кратную 4
+    next_run_minute = (current_minute // 4 + 1) * 4
+    if next_run_minute >= 60:  # Если вышли за пределы часа
         next_run_minute = 0  # Переходим к следующему часу
     
-    # Вычисляем время ожидания
-    wait_time = (next_run_minute - now.minute) * 60 - now.second
+    # Вычисляем время ожидания до следующей минуты, кратной 4
+    wait_time = (next_run_minute - current_minute) * 60 - current_second
     
     # Если wait_time отрицательное (например, сейчас 3:59:50), корректируем
     if wait_time < 0:
