@@ -25,8 +25,8 @@
     -moz-box-shadow:    10px 0px 6px -5px rgba(30, 30, 30, 0.5);
     box-shadow:         10px 0px 6px -5px rgba(30, 30, 30, 0.5);
 
-    writing-mode: sideways-lr;
-    
+    writing-mode: vertical-rl;
+    rotate: 180deg;
   }
   
   .forecast-card {
