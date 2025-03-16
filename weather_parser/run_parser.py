@@ -17,29 +17,27 @@ def parse(parser):
             print(traceback.format_exc())
 
 def get_sleep_interval():
-    # Получаем текущее время в секундах с начала эпохи
     current_time = time.time()
-    
-    # Преобразуем текущее время в локальное время
     local_time = time.localtime(current_time)
-    
-    # Получаем текущие минуты и секунды
     current_minute = local_time.tm_min
     current_second = local_time.tm_sec
-    
-    # Вычисляем следующую минуту, кратную 4
+
     next_run_minute = (current_minute // 4 + 1) * 4
-    if next_run_minute >= 60:  # Если вышли за пределы часа
-        next_run_minute = 0  # Переходим к следующему часу
-    
-    # Вычисляем время ожидания до следующей минуты, кратной 4
+    if next_run_minute >= 60:
+        next_run_minute = 0
+        add_extra_hour = True  # Флаг, что переходим к следующему часу
+    else:
+        add_extra_hour = False
+
     wait_time = (next_run_minute - current_minute) * 60 - current_second
-    
-    # Если wait_time отрицательное (например, сейчас 3:59:50), корректируем
+
     if wait_time < 0:
-        wait_time += 240  # Добавляем 4 минуты (240 секунд)
-    
-    return wait_time + 20 # Добавляем 20 секунд
+        if add_extra_hour:
+            wait_time += 3600  # Добавляем час, если перескочили на новый час
+        else:
+            wait_time += 240  # Добавляем 4 минуты в остальных случаях
+
+    return wait_time + 20  # Добавляем 20 секунд
 
 if __name__ == "__main__":
     # Инициализация БД перед запуском
